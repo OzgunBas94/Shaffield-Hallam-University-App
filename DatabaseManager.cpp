@@ -1,6 +1,6 @@
 //C++ Boot Camp - Task 2 - 2018-19 
-//Name: 
-//Student number: 
+//Name: Ozgun Bas
+//Student number: b8037359
 
 #include "DatabaseManager.h"
 
