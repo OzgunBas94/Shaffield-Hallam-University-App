@@ -3,6 +3,8 @@
 //Student number: b8037359
 
 #include "MenuSystem.h"
+#include <iostream>
+using namespace std;
 
 MenuSystem& MenuSystem::instance()
 {
@@ -78,7 +80,7 @@ int MenuSystem::run_admin_user_menu()
 		case '1': list_all_games(); break;
 		case '2': list_all_users(); break;
 		case '3': std::cout << "TODO\n"; break;
-		case '4': std::cout << "TODO\n"; break;
+		case '4': addUser(); break;
 		case 'q': result = -1; break;
 		default:  std::cout << "INAVLID OPTION\n"; break;
 		}
@@ -112,7 +114,7 @@ int MenuSystem::run_player_user_menu()
 		case '1': list_all_games(); break;
 		case '2': std::cout << "TODO\n"; break;
 		case '3': std::cout << "TODO\n"; break;
-		case '4': std::cout << "TODO\n"; break;
+		case '4':  std::cout << "TODO\n"; break;
 		case 'q': result = -1; break;
 		default:  std::cout << "INAVLID OPTION\n"; break;
 		}
@@ -169,4 +171,22 @@ int MenuSystem::run()
 	} while (result == 0);
 
 	return 0;
+}
+
+void  MenuSystem::addUser() {
+	string username;
+	string password;
+	string email;
+
+	if (m_pUser->get_user_type() == UserTypeId::kAdminUser) {
+		cout << "Add new user." << endl;
+		cout << "Username: ";
+		cin >> username;
+		cout << "Password: ";
+		cin >> password;
+		cout << "Email: ";
+		cin >> email;
+
+		DatabaseManager::instance().store_data(username, password, email);
+	}
 }

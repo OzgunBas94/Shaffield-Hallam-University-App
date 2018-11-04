@@ -32,7 +32,11 @@ private:
 
 	int run_unknown_user_menu();
 
+	void addUser();
+
+
 private:
 	UserBase* m_pUser = nullptr;  // the currently logged in user.
+
 };
 

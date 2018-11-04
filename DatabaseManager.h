@@ -5,8 +5,11 @@
 
 #include "Game.h"
 #include "Users.h"
-
+#include <fstream>
+#include <iostream>
 #include <map>
+#include <string>
+using namespace std;
 
 //--
 // DatabaseManager is the one central database for the whole system
@@ -22,7 +25,7 @@ public:
 	void load_data();
 
 	// Write all the data to storage.
-	void store_data();
+	void store_data(string user, string pw, string mail);
 
 	// Adds a user to the db.
 	void add_user(UserBase* pUser);
