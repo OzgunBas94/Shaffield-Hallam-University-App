@@ -32,7 +32,7 @@ private:
 
 	int run_unknown_user_menu();
 
-	void addUser();
+	void add_user();
 
 
 private:

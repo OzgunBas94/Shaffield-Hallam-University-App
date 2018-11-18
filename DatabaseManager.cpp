@@ -63,7 +63,7 @@ void DatabaseManager::load_data()
 }
 
 
-void DatabaseManager::store_data(string user, string pw, string mail)
+void DatabaseManager::store_data(string user, string pw, string mail, string userType)
 {
 	cout << "hier" << endl;
 	ofstream outfile("file.txt", std::ios_base::app);
@@ -72,9 +72,15 @@ void DatabaseManager::store_data(string user, string pw, string mail)
 	string username =user;
 	string password = pw;
 	string email = mail;
+	string typeOfUser = userType;
 
-	outfile << username << " "<< password << " " << email << endl;
-	//load_data();
+	if (!outfile) {
+		cerr << "Textfile doesn't exist!";
+	}
+	else {
+		outfile << username << " " << password << " " << email << " " << userType << endl;
+		outfile.close();
+	}
 	}
 
 

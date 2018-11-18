@@ -25,7 +25,7 @@ public:
 	void load_data();
 
 	// Write all the data to storage.
-	void store_data(string user, string pw, string mail);
+	void store_data(string user, string pw, string mail, string usertype);
 
 	// Adds a user to the db.
 	void add_user(UserBase* pUser);
