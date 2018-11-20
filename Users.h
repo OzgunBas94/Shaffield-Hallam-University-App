@@ -5,7 +5,12 @@
 
 #include <string>
 #include <list>
+#include <iostream>
+#include "Game.h"
 
+class DatabaseManager;
+
+using namespace std;
 //--
 // UserTypeId represents an identifier for the specific user type.
 //--
@@ -24,16 +29,12 @@ class UserBase
 public:
 	using Username = std::string;
 
-	UserBase(const Username& username, const std::string& password, const std::string& email)
-		: m_username(username)
-		, m_password(password)
-		, m_email(email)
-	{}
-
+	UserBase(const Username& username, const std::string& password, const std::string& email);
+	
 	virtual ~UserBase() {}
 
 	// mechanism for identifying the user type at runtime.
-	virtual const UserTypeId get_user_type() const = 0;
+	virtual const UserTypeId get_user_type() const const = 0;
 
 	const std::string get_username() const { return m_username; }
 
@@ -43,10 +44,12 @@ public:
 	const std::string get_email() const { return m_email; }
 	void set_email(const std::string& val) { m_email = val; }
 
+	const void list_all_games()const;
 private:
 	const Username m_username; // The users username (unique key)
-	std::string m_password; // Users password.
-	std::string m_email; // Users email address.
+	 string m_password; // Users password.
+	 string m_email; // Users email address.
+	//const UserTypeId m_userType; //Users user type
 };
 
 //--
@@ -83,5 +86,16 @@ public:
 
 	// define the specific user type.
 	virtual const UserTypeId get_user_type() const override { return UserTypeId::kAdminUser; }
+
+	void add_user();
+
+	void add_game();
+
+	void list_all_users() const;
+
+	void delete_game();
+
+	void modify_game();
+
 };
 

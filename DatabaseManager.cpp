@@ -27,14 +27,40 @@ DatabaseManager& DatabaseManager::instance()
 
 void DatabaseManager::load_data()
 {
+	
+	load_user_list();
+	load_game_list();
+
+}
+
+
+void DatabaseManager::store_user_data(string user, string pw, string mail, string userType)
+{
+	ofstream outfile("listOfUsers.txt", std::ios_base::app);
+
+	string username =user;
+	string password = pw;
+	string email = mail;
+	string typeOfUser = userType;
+
+		if (!outfile) {
+			cerr << "Textfile doesn't exist!";
+		}
+		else {
+			outfile << username << " " << password << " " << email << " " << userType << endl;
+			outfile.close();
+		}
+	}
+
+
+void DatabaseManager::load_user_list() {
 	string user;
 	string pw;
 	string email;
-	string line;
-	ifstream file("file.txt");
+	ifstream file("listOfUsers.txt");
 	if (file.is_open()) {
-		 
-		while (file >> user >> pw >> email ) {
+
+		while (file >> user >> pw >> email) {
 			add_user(new AdminUser(user, pw, email));
 		}
 		file.close();
@@ -42,47 +68,66 @@ void DatabaseManager::load_data()
 	else {
 		cout << "File is not open" << endl;
 	}
+}
 
-	// For test purposes I shall populate the database manually here.
-	// In your applications we want you to load data (and save) the contents of the database.
+void DatabaseManager::store_game_data(string title, string description, double price)
+{
+	ofstream outFile;
+	outFile.open("listOfGames.txt", ios::app);
 
-	// add some admin users.
-	add_user(new AdminUser("davem", "12345", "d.r.moore@shu.ac.uk"));
+	string gameTitle = title;
+	string gameDesc = description;
+	int id = ++(this->idCount);
+	string gameId = to_string(id);
+	double gamePrice = price;
 
-	//// add some players
-	//add_user(new PlayerUser("frank", "frank12345", "frank@unknown.com"));
-	//add_user(new PlayerUser("jake", "jake12345", "jake@unknown.com"));
-	//add_user(new PlayerUser("andrew", "andrew12345", "andrew@unknown.com"));
-	//add_user(new PlayerUser("martin", "martin12345", "martin@unknown.com"));
-
-	//// add some games.
-	//add_game(Game(4789, "Bounceback", "A platform puzzle game for PSP"));
-	//add_game(Game(5246, "Piecefall", "A tetris like 3d puzzle game for PS4"));
-
+	if (!outFile) {
+		cout << "Textfile doesn't exist!";
+	}
+	else {
+		outFile << id << ',' << gameTitle << ',' << gameDesc << ',' << to_string(gamePrice) << endl;
+		outFile.close();
+		add_game(Game(id, gameTitle, gameDesc, gamePrice));
+		cout << "You added the game: " << title << endl;
+	}
 
 }
 
+void DatabaseManager::load_game_list() {
 
-void DatabaseManager::store_data(string user, string pw, string mail, string userType)
-{
-	cout << "hier" << endl;
-	ofstream outfile("file.txt", std::ios_base::app);
+	ifstream gameFile;
+	string readFile;
+	int gameId = 0;
+	string gameTitle;
+	string gameDesc;
+	double gamePrice;
+	
+	gameFile.open("listOfGames.txt");
 
+	if (gameFile.is_open()) {
+		while (getline(gameFile, readFile)) {
+			gameId = stoi(get_token(readFile));
+			gameTitle = get_token(readFile);
+			gameDesc = get_token(readFile);
+			gamePrice = stod(get_token(readFile));
 
-	string username =user;
-	string password = pw;
-	string email = mail;
-	string typeOfUser = userType;
-
-	if (!outfile) {
-		cerr << "Textfile doesn't exist!";
+			add_game(Game(gameId, gameTitle, gameDesc, gamePrice));
+		}
+		this->idCount = gameId;
+		gameFile.close();
 	}
 	else {
-		outfile << username << " " << password << " " << email << " " << userType << endl;
-		outfile.close();
+		cout << "Could not open this file!";
 	}
-	}
+}
 
+
+string DatabaseManager::get_token(string& readFile) {
+	int position = readFile.find(',');
+	string tmp = readFile.substr(0, position);
+	readFile = readFile.substr((position + 1), readFile.length() - (position + 1));
+	return tmp;
+}
 
 void DatabaseManager::add_user(UserBase* pUser)
 {
@@ -129,4 +174,8 @@ Game* DatabaseManager::find_game(const Game::GameId gameid)
 	{
 		return nullptr;
 	}
+}
+bool DatabaseManager::find_email() {
+	//TODO
+	return false;
 }

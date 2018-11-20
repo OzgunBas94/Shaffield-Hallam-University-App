@@ -5,10 +5,12 @@
 
 #include "Game.h"
 #include "Users.h"
+#include "MenuSystem.h"
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <string>
+#include <sstream>
 using namespace std;
 
 //--
@@ -23,9 +25,12 @@ public:
 
 	// Initialize the database from storage.
 	void load_data();
+	void load_user_list();
+	void load_game_list();
 
 	// Write all the data to storage.
-	void store_data(string user, string pw, string mail, string usertype);
+	void store_user_data(string user, string pw, string mail, string usertype);
+	void store_game_data(string title, string description, double price);
 
 	// Adds a user to the db.
 	void add_user(UserBase* pUser);
@@ -51,6 +56,8 @@ public:
 		for (auto it : m_games) { func(it.second); }
 	}
 
+	string DatabaseManager::get_token(string& readFile);
+	bool DatabaseManager::find_email(); //TODO
 private:
 	// Constructors are private for singleton pattern.
 	DatabaseManager();
@@ -64,6 +71,6 @@ private:
 
 	UserContainer m_users;
 	GameContainer m_games;
-
+	int idCount;
 };
 

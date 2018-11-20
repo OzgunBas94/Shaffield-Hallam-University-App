@@ -3,7 +3,6 @@
 //Student number: b8037359
 
 #include "MenuSystem.h"
-#include <iostream>
 using namespace std;
 
 MenuSystem& MenuSystem::instance()
@@ -15,7 +14,7 @@ MenuSystem& MenuSystem::instance()
 void MenuSystem::list_all_games() const
 {
 	auto gameVisitorLambda = [](const Game& rGame) {
-		std::cout << rGame.get_title() << "\n";
+		cout << "ID: " << rGame.get_game_id() << " " << rGame.get_title() << ": " << rGame.get_description() << rGame.get_price() << endl;
 	};
 
 	DatabaseManager::instance().visit_games(gameVisitorLambda);
@@ -69,7 +68,9 @@ int MenuSystem::run_admin_user_menu()
 		std::cout << "(1) List All Games\n";
 		std::cout << "(2) List All Users\n";
 		std::cout << "(3) Add Game\n";
-		std::cout << "(4) Add User\n";
+		std::cout << "(4) Modify Game\n";
+		std::cout << "(5) Delete Game\n";
+		std::cout << "(6) Add User\n";
 		std::cout << "(q) Logout\n";
 
 		char option;
@@ -77,10 +78,12 @@ int MenuSystem::run_admin_user_menu()
 
 		switch (option)
 		{
-		case '1': list_all_games(); break;
-		case '2': list_all_users(); break;
-		case '3': std::cout << "TODO\n"; break;
-		case '4': add_user(); break;
+		case '1': pAdminUser->list_all_games(); break;
+		case '2': pAdminUser->list_all_users(); break;
+		case '3': pAdminUser->add_game(); break;
+		case '4': pAdminUser->modify_game();
+		case '5': pAdminUser->delete_game();
+		case '6': pAdminUser->add_user(); break;
 		case 'q': result = -1; break;
 		default:  std::cout << "INAVLID OPTION\n"; break;
 		}
@@ -173,29 +176,3 @@ int MenuSystem::run()
 	return 0;
 }
 
-void  MenuSystem::add_user() {
-	string username;
-	string password;
-	string email;
-	string userType;
-
-	if (m_pUser->get_user_type() == UserTypeId::kAdminUser) {
-		cout << "Add new user." << endl;
-		cout << "Username: ";
-		cin >> username;
-		if (DatabaseManager::instance().find_user(username) == nullptr) {
-			cout << "Password: ";
-			cin >> password;
-			cout << "Email: ";
-			cin >> email;
-			cout << "Usertype (admin/player): ";
-			cin >> userType;
-		}else{
-			cout << "This username is already taken. Please try again!";
-			add_user();
-		}
-		
-
-		DatabaseManager::instance().store_data(username, password, email, userType);
-	}
-}

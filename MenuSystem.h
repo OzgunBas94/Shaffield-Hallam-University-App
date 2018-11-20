@@ -4,11 +4,9 @@
 #pragma once
 
 #include <iostream>
-
 #include "DatabaseManager.h"
 
 class UserBase;
-
 class MenuSystem
 {
 public:
@@ -31,9 +29,6 @@ private:
 	int run_player_user_menu();
 
 	int run_unknown_user_menu();
-
-	void add_user();
-
 
 private:
 	UserBase* m_pUser = nullptr;  // the currently logged in user.
