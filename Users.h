@@ -44,7 +44,6 @@ public:
 	const std::string get_email() const { return m_email; }
 	void set_email(const std::string& val) { m_email = val; }
 
-	const void list_all_games()const;
 private:
 	const Username m_username; // The users username (unique key)
 	 string m_password; // Users password.

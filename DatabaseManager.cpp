@@ -47,7 +47,7 @@ void DatabaseManager::store_user_data(string user, string pw, string mail, strin
 			cerr << "Textfile doesn't exist!";
 		}
 		else {
-			outfile << username << " " << password << " " << email << " " << userType << endl;
+			outfile << username << " " << password << " " << email << " " << typeOfUser << endl;
 			outfile.close();
 		}
 	}
@@ -57,20 +57,27 @@ void DatabaseManager::load_user_list() {
 	string user;
 	string pw;
 	string email;
+	string usertype;
 	ifstream file("listOfUsers.txt");
 	if (file.is_open()) {
 
 		while (file >> user >> pw >> email) {
-			add_user(new AdminUser(user, pw, email));
+			if (usertype == "admin") {
+				add_user(new AdminUser(user, pw, email));
+			}
+			else {
+				add_user(new PlayerUser(user, pw, email));
+			}
+			
 		}
 		file.close();
 	}
 	else {
-		cout << "File is not open" << endl;
+		cout << "Could not open the file: " <<endl;
 	}
 }
 
-void DatabaseManager::store_game_data(string title, string description, double price)
+void DatabaseManager::store_game_data(string& title, string description, double price)
 {
 	ofstream outFile;
 	outFile.open("listOfGames.txt", ios::app);
@@ -85,9 +92,10 @@ void DatabaseManager::store_game_data(string title, string description, double p
 		cout << "Textfile doesn't exist!";
 	}
 	else {
-		outFile << id << ',' << gameTitle << ',' << gameDesc << ',' << to_string(gamePrice) << endl;
+		outFile << id << ',' << gameTitle << ',' << gameDesc << ',' << to_string(gamePrice) << "," << endl;
 		outFile.close();
-		add_game(Game(id, gameTitle, gameDesc, gamePrice));
+
+
 		cout << "You added the game: " << title << endl;
 	}
 
@@ -97,6 +105,7 @@ void DatabaseManager::load_game_list() {
 
 	ifstream gameFile;
 	string readFile;
+
 	int gameId = 0;
 	string gameTitle;
 	string gameDesc;
@@ -106,6 +115,7 @@ void DatabaseManager::load_game_list() {
 
 	if (gameFile.is_open()) {
 		while (getline(gameFile, readFile)) {
+
 			gameId = stoi(get_token(readFile));
 			gameTitle = get_token(readFile);
 			gameDesc = get_token(readFile);
@@ -113,7 +123,9 @@ void DatabaseManager::load_game_list() {
 
 			add_game(Game(gameId, gameTitle, gameDesc, gamePrice));
 		}
+		
 		this->idCount = gameId;
+
 		gameFile.close();
 	}
 	else {
@@ -123,6 +135,7 @@ void DatabaseManager::load_game_list() {
 
 
 string DatabaseManager::get_token(string& readFile) {
+
 	int position = readFile.find(',');
 	string tmp = readFile.substr(0, position);
 	readFile = readFile.substr((position + 1), readFile.length() - (position + 1));
@@ -161,6 +174,7 @@ void DatabaseManager::add_game(Game& rGame)
 {
 	// Store the game indexed by game id.
 	m_games.insert(std::make_pair(rGame.get_game_id(), rGame));
+	
 }
 
 Game* DatabaseManager::find_game(const Game::GameId gameid)
@@ -175,6 +189,39 @@ Game* DatabaseManager::find_game(const Game::GameId gameid)
 		return nullptr;
 	}
 }
+
+
+void DatabaseManager::remove_game(string& gameId) {
+	cout << "test_remove_game" <<endl ;
+	string id;
+	ifstream gamefile;
+	ofstream outfile("listgames.txt");
+	string readfile;
+	gamefile.open("listOfGames.txt", std::ios_base::app);
+
+	if (gamefile.is_open()) {
+		while (getline(gamefile, readfile)) {
+			int position = readfile.find(',');
+			id = readfile.substr(0, position);
+			if (gameId != id) {
+				outfile << readfile<< endl;
+			}
+			else {
+				m_games.erase(stoi(gameId));
+				cout << "Game successfully deleted! " << endl;
+			}
+
+		}
+	}
+	else {
+		cout << "Could not open this file!";
+	}
+	gamefile.close();
+	outfile.close();
+	remove("listOfGames.txt");
+	rename("listgames.txt", "listOfGames.txt");
+}
+
 bool DatabaseManager::find_email() {
 	//TODO
 	return false;

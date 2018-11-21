@@ -20,6 +20,8 @@ using namespace std;
 class DatabaseManager
 {
 public:
+	void remove_game(string& gameId);
+
 	// Singleton instance definition.
 	static DatabaseManager& instance();
 
@@ -30,7 +32,7 @@ public:
 
 	// Write all the data to storage.
 	void store_user_data(string user, string pw, string mail, string usertype);
-	void store_game_data(string title, string description, double price);
+	void store_game_data(string& title, string description, double price);
 
 	// Adds a user to the db.
 	void add_user(UserBase* pUser);
@@ -57,7 +59,9 @@ public:
 	}
 
 	string DatabaseManager::get_token(string& readFile);
-	bool DatabaseManager::find_email(); //TODO
+	bool DatabaseManager::find_email(); //TODO 
+
+	
 private:
 	// Constructors are private for singleton pattern.
 	DatabaseManager();

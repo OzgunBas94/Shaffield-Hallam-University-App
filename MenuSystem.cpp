@@ -14,12 +14,10 @@ MenuSystem& MenuSystem::instance()
 void MenuSystem::list_all_games() const
 {
 	auto gameVisitorLambda = [](const Game& rGame) {
-		cout << "ID: " << rGame.get_game_id() << " " << rGame.get_title() << ": " << rGame.get_description() << rGame.get_price() << endl;
+		std::cout << rGame.get_game_id() << " " << rGame.get_title() << ": " << rGame.get_description() << " " << rGame.get_price() << " " << "\n";
 	};
-
 	DatabaseManager::instance().visit_games(gameVisitorLambda);
 }
-
 void MenuSystem::list_all_users() const
 {
 	auto userVisitorLambda = [](const UserBase& rUser) {
@@ -78,11 +76,11 @@ int MenuSystem::run_admin_user_menu()
 
 		switch (option)
 		{
-		case '1': pAdminUser->list_all_games(); break;
+		case '1': list_all_games(); break;
 		case '2': pAdminUser->list_all_users(); break;
 		case '3': pAdminUser->add_game(); break;
-		case '4': pAdminUser->modify_game();
-		case '5': pAdminUser->delete_game();
+		case '4': pAdminUser->modify_game(); break;
+		case '5': pAdminUser->delete_game(); break;
 		case '6': pAdminUser->add_user(); break;
 		case 'q': result = -1; break;
 		default:  std::cout << "INAVLID OPTION\n"; break;
