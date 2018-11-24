@@ -11,6 +11,7 @@
 #include <map>
 #include <string>
 #include <sstream>
+
 using namespace std;
 
 //--
@@ -20,8 +21,6 @@ using namespace std;
 class DatabaseManager
 {
 public:
-	void remove_game(string& gameId);
-
 	// Singleton instance definition.
 	static DatabaseManager& instance();
 
@@ -32,7 +31,7 @@ public:
 
 	// Write all the data to storage.
 	void store_user_data(string user, string pw, string mail, string usertype);
-	void store_game_data(string& title, string description, double price);
+	void store_game_data(string& title, string& description, double price);
 
 	// Adds a user to the db.
 	void add_user(UserBase* pUser);
@@ -61,6 +60,8 @@ public:
 	string DatabaseManager::get_token(string& readFile);
 	bool DatabaseManager::find_email(); //TODO 
 
+	void remove_game(const string& gameId);
+	void modify_game(Game*& game, const string& newGameDesc, const string& newGamePrice);
 	
 private:
 	// Constructors are private for singleton pattern.
@@ -70,8 +71,8 @@ private:
 
 private:
 	// Types
-	using UserContainer = std::map<UserBase::Username, UserBase*>;
-	using GameContainer = std::map<Game::GameId, Game>;
+	using UserContainer = map<UserBase::Username, UserBase*>;
+	using GameContainer = map<Game::GameId, Game>;
 
 	UserContainer m_users;
 	GameContainer m_games;

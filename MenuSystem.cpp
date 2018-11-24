@@ -3,7 +3,7 @@
 //Student number: b8037359
 
 #include "MenuSystem.h"
-using namespace std;
+
 
 MenuSystem& MenuSystem::instance()
 {
@@ -14,14 +14,14 @@ MenuSystem& MenuSystem::instance()
 void MenuSystem::list_all_games() const
 {
 	auto gameVisitorLambda = [](const Game& rGame) {
-		std::cout << rGame.get_game_id() << " " << rGame.get_title() << ": " << rGame.get_description() << " " << rGame.get_price() << " " << "\n";
+		cout << rGame.get_game_id() << " " << rGame.get_title() << ": " << rGame.get_description() << " " << rGame.get_price() << " " << "\n";
 	};
 	DatabaseManager::instance().visit_games(gameVisitorLambda);
 }
 void MenuSystem::list_all_users() const
 {
 	auto userVisitorLambda = [](const UserBase& rUser) {
-		std::cout << rUser.get_username() << " " << rUser.get_email() << "\n";
+		cout << rUser.get_username() << " " << rUser.get_email() << "\n";
 	};
 
 	DatabaseManager::instance().visit_users(userVisitorLambda);
@@ -32,26 +32,26 @@ int MenuSystem::run_login_screen()
 	m_pUser = nullptr;
 
 	// in this menu we get the username and password.
-	std::string username;
-	std::string password;
+	string username;
+	string password;
 
-	std::cout << "Login Menu\n";
-	std::cout << "Username: ";
-	std::cin >> username;
+	cout << "Login Menu\n";
+	cout << "Username: ";
+	cin >> username;
 
-	std::cout << "Password: ";
-	std::cin >> password;
+	cout << "Password: ";
+	cin >> password;
 
 	// find the user and check password
 	auto pUser = DatabaseManager::instance().find_user(username);
 	if (pUser && pUser->get_password() == password)
 	{
 		m_pUser = pUser;
-		std::cout << "Hi " << m_pUser->get_username() << "\n";
+		cout << "Hi " << m_pUser->get_username() << "\n";
 	}
 	else
 	{
-		std::cout << "No such username or password!\n";
+		cout << "No such username or password!\n";
 	}
 	return 0;
 }
@@ -62,28 +62,28 @@ int MenuSystem::run_admin_user_menu()
 	int result = 0;
 	do
 	{
-		std::cout << "Admin Menu (" << m_pUser->get_username() << ")\n";
-		std::cout << "(1) List All Games\n";
-		std::cout << "(2) List All Users\n";
-		std::cout << "(3) Add Game\n";
-		std::cout << "(4) Modify Game\n";
-		std::cout << "(5) Delete Game\n";
-		std::cout << "(6) Add User\n";
-		std::cout << "(q) Logout\n";
+		cout << "Admin Menu (" << m_pUser->get_username() << ")\n";
+		cout << "(1) List All Games\n";
+		cout << "(2) List All Users\n";
+		cout << "(3) Add Game\n";
+		cout << "(4) Modify Game\n";
+		cout << "(5) Delete Game\n";
+		cout << "(6) Add User\n";
+		cout << "(q) Logout\n";
 
 		char option;
-		std::cin >> option;
+		cin >> option;
 
 		switch (option)
 		{
 		case '1': list_all_games(); break;
 		case '2': pAdminUser->list_all_users(); break;
 		case '3': pAdminUser->add_game(); break;
-		case '4': pAdminUser->modify_game(); break;
+		case '4': modify_game(); break;
 		case '5': pAdminUser->delete_game(); break;
 		case '6': pAdminUser->add_user(); break;
 		case 'q': result = -1; break;
-		default:  std::cout << "INAVLID OPTION\n"; break;
+		default:  cout << "INAVLID OPTION\n"; break;
 		}
 	} while (result == 0);
 
@@ -99,25 +99,27 @@ int MenuSystem::run_player_user_menu()
 	int result = 0;
 	do
 	{
-		std::cout << "Player Menu (" << m_pUser->get_username() << ")\n";
-		std::cout << "Wallet \x9C" << pPlayerUser->get_available_funds() << "\n";
-		std::cout << "(1) List All Games\n";
-		std::cout << "(2) List My Games\n";
-		std::cout << "(3) Buy Game\n";
-		std::cout << "(4) Add Funds\n";
-		std::cout << "(q) Logout\n";
+		cout << "Player Menu (" << m_pUser->get_username() << ")\n";
+		cout << "Wallet \x9C" << pPlayerUser->get_available_funds() << "\n";
+		cout << "(1) List All Games\n";
+		cout << "(2) List My Games\n";
+		cout << "(3) Search Game\n";
+		cout << "(3) Buy Game\n";
+		cout << "(4) Add Funds\n";
+		cout << "(q) Logout\n";
 
 		char option;
-		std::cin >> option;
+		cin >> option;
 
 		switch (option)
 		{
 		case '1': list_all_games(); break;
-		case '2': std::cout << "TODO\n"; break;
-		case '3': std::cout << "TODO\n"; break;
-		case '4':  std::cout << "TODO\n"; break;
+		case '2': pPlayerUser->search_game(); break;
+		case '3': cout << "TODO\n"; break;
+		case '4': cout << "TODO\n"; break;
+		case '5': cout << "TODO\n"; break;
 		case 'q': result = -1; break;
-		default:  std::cout << "INAVLID OPTION\n"; break;
+		default:  cout << "INAVLID OPTION\n"; break;
 		}
 	} while (result == 0);
 
@@ -132,20 +134,20 @@ int MenuSystem::run_unknown_user_menu()
 	// in this menu we get the username and password.
 	int result = 0;
 
-	std::cout << "Main Menu\n";
-	std::cout << "(1) List All Games\n";
-	std::cout << "(2) Login\n";
-	std::cout << "(q) Quit\n";
+	cout << "Main Menu\n";
+	cout << "(1) List All Games\n";
+	cout << "(2) Login\n";
+	cout << "(q) Quit\n";
 
 	char option;
-	std::cin >> option;
+	cin >> option;
 
 	switch (option)
 	{
 	case '1': list_all_games(); break;
 	case '2': run_login_screen(); break;
 	case 'q': result = -1;  break;
-	default:  std::cout << "INAVLID OPTION\n"; break;
+	default:  cout << "INAVLID OPTION\n"; break;
 	}
 
 	return result;
@@ -172,5 +174,39 @@ int MenuSystem::run()
 	} while (result == 0);
 
 	return 0;
+}
+
+void MenuSystem::modify_game() {
+	string gameId;
+	Game* m_pGame = nullptr;
+	AdminUser* pAdminUser = static_cast<AdminUser*>(m_pUser);
+
+	MenuSystem::list_all_games();
+	cout << "ID of the game you want to modify: " << endl;
+	cin >> gameId;
+
+	//if game exists
+	auto pGame = DatabaseManager::instance().find_game(stoi(gameId));
+	if (pGame != nullptr) {
+		m_pGame = pGame;
+
+		cout << "What do you want to modify?" << endl;
+		cout << "(1) Description" << endl;
+		cout << "(2) Price" << endl;
+
+		char option;
+		cin >> option;
+
+		switch (option)
+		{
+		case '1': pAdminUser->modify_game(m_pGame, 1, stoi(gameId)); break;
+		case '2': pAdminUser->modify_game(m_pGame, 2, stoi(gameId)); break;
+		default:  cout << "INAVLID OPTION\n"; break;
+		}
+	}
+	else {
+		cout << "There is no game with this Id!" << endl;
+	}
+	
 }
 

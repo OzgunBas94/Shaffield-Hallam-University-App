@@ -1,4 +1,5 @@
-Gamze 123 hams@hotmail.de 
-hans 123 hans@hotmail.de 
-mario 123 mario@hotmail.de
-Murat 123 murat@hotmail.de
+Gamze 123 hams@hotmail.de admin
+hans 123 hans@hotmail.de admin
+mario 123 mario@hotmail.de player
+Murat 123 murat@hotmail.de admin
+Ozgun 123 ozgun@hotmail.de admin

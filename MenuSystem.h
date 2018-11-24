@@ -5,7 +5,7 @@
 
 #include <iostream>
 #include "DatabaseManager.h"
-
+using namespace std;
 class UserBase;
 class MenuSystem
 {
@@ -29,6 +29,8 @@ private:
 	int run_player_user_menu();
 
 	int run_unknown_user_menu();
+
+	void modify_game();
 
 private:
 	UserBase* m_pUser = nullptr;  // the currently logged in user.
