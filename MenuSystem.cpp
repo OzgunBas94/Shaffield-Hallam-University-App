@@ -104,8 +104,8 @@ int MenuSystem::run_player_user_menu()
 		cout << "(1) List All Games\n";
 		cout << "(2) List My Games\n";
 		cout << "(3) Search Game\n";
-		cout << "(3) Buy Game\n";
-		cout << "(4) Add Funds\n";
+		cout << "(4) Buy Game\n";
+		cout << "(5) Add Funds\n";
 		cout << "(q) Logout\n";
 
 		char option;
@@ -114,10 +114,10 @@ int MenuSystem::run_player_user_menu()
 		switch (option)
 		{
 		case '1': list_all_games(); break;
-		case '2': pPlayerUser->search_game(); break;
-		case '3': cout << "TODO\n"; break;
-		case '4': cout << "TODO\n"; break;
-		case '5': cout << "TODO\n"; break;
+		case '2': pPlayerUser->list_my_games();  break;
+		case '3': pPlayerUser->search_game_by_title(); break;
+		case '4': pPlayerUser->buy_game(); break;
+		case '5': pPlayerUser->add_funds(); break;
 		case 'q': result = -1; break;
 		default:  cout << "INAVLID OPTION\n"; break;
 		}
@@ -185,7 +185,7 @@ void MenuSystem::modify_game() {
 	cout << "ID of the game you want to modify: " << endl;
 	cin >> gameId;
 
-	//if game exists
+	//if this game exists
 	auto pGame = DatabaseManager::instance().find_game(stoi(gameId));
 	if (pGame != nullptr) {
 		m_pGame = pGame;

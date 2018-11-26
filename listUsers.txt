@@ -1,0 +1,7 @@
+Gamze 123 hams@hotmail.de admin 0.0
+hans 123 hans@hotmail.de admin 0.0
+mario 123 mario@hotmail.de player 261.600000
+Murat 123 murat@hotmail.de admin 0.0
+Ozgun 123 ozgun@hotmail.de admin 0.0
+dave 123 dave@hotmail.com player 189.670000
+benny 123 benny@hotmail.com player 56.270000

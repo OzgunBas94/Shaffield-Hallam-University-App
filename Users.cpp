@@ -45,19 +45,27 @@ void AdminUser::add_user() {
 		cout << "Add new user." << endl;
 		cout << "Username: ";
 		cin >> username;
-		if (DatabaseManager::instance().find_user(username) == nullptr) {
-			cout << "Password: ";
-			cin >> password;
+		while (!(DatabaseManager::instance().find_user(username) == nullptr)) {
+			cout << "This username is already taken. Please try again." << endl;
+			cout << "Username: ";
+			cin >> username;
+		}
+		cout << "Password: ";
+		cin >> password;
+		cout << "Email: ";
+		cin >> email;
+		while (DatabaseManager::instance().find_email(email)) {
+			cout << "This email is already taken. Please try again!: ";
 			cout << "Email: ";
 			cin >> email;
-			cout << "Usertype (admin/player): ";
+		}
+		cout << "Usertype (admin/player): ";
+		cin >> userType;
+		while (! (userType != "admin" || userType != "Admin"
+			||  userType != "player" || userType != "Player")) {
+			cout << " This usertype is not valid. Please try again!";
 			cin >> userType;
 		}
-		else {
-			cout << "This username is already taken. Please try again!";
-			add_user();
-		}
-
 
 		DatabaseManager::instance().store_user_data(username, password, email, userType);
 	}
@@ -123,7 +131,8 @@ void AdminUser::modify_game(Game*& game, const int option, const int gameId) {
 }
 //_____________PlayerUser_____________
 
-
+PlayerUser::PlayerUser(const Username& username, const string& password, const string& email, const double fund)
+	: UserBase(username, password, email), m_accountFunds(fund) {}
 
 const UserTypeId PlayerUser::get_user_type() const {
 	return UserTypeId::kPlayerUser;
@@ -137,13 +146,73 @@ double PlayerUser::get_available_funds() const {
 	return m_accountFunds;
 }
 
-void PlayerUser::search_game() {
+void PlayerUser::search_game_by_title() {
 	string title;
 	cout << "Which game do you want to search?" << endl;
-	cout << "Title: " << endl;
-	cin >> title;
+	cout << "Title: ";
+	cin.ignore();
+	getline(cin, title);
+
+	auto pGame = DatabaseManager::instance().find_game_with_title(title);
+	if (pGame == nullptr) {
+		cout << "This game is not existing! Please try again" << endl << endl;
+	}
+	else {
+		cout << "title: " << pGame->get_title() << " description: " << pGame->get_description() << " price: " << pGame->get_price() << endl << endl;
+	}
 }
 
-void PlayerUser::add_game_to_list() {
+void PlayerUser::list_my_games() {
+	cout << "My games:" << endl;
+	GameList ownedGames = get_game_list();
+	for (list<Game::GameId>::const_iterator it = ownedGames.begin(); it != ownedGames.end(); ++it) {
+		auto pGame = DatabaseManager::instance().find_game(*it);
+		cout << "ID: " << pGame->get_game_id() << " TITLE: " << pGame->get_title() << " DESCRIPTION: " << pGame->get_description() << endl;
+	}
+}
 
+void PlayerUser::add_funds() {
+	cout << "Add funds: ";
+	string fund;
+	cin >> fund;
+	this->m_accountFunds += stod(fund);
+	double get = get_available_funds();
+	cout << "FUNDS: " << get << endl;
+	DatabaseManager::instance().modify_user(get_username(), m_accountFunds);
+	cout << "You successfully added " << fund << " in your wallet! \n Current wallet: " << m_accountFunds << endl;
+}
+
+void PlayerUser::withdraw_funds(const double val) {
+	m_accountFunds -= val;
+}
+void PlayerUser::buy_game() {
+	Game* pGame = nullptr;
+	double userFunds = 0;
+	double gamePrice = 0;
+	string id;
+
+	cout << "Enter the ID of the game: ";
+	cin.ignore();
+	getline(cin, id);
+	if (id != "") {
+		pGame = DatabaseManager::instance().find_game(stoi(id));
+	}
+	if (pGame != nullptr) {
+		gamePrice = pGame->get_price();
+	}
+	userFunds = this->get_available_funds();
+	if (userFunds >= gamePrice) {
+		this->withdraw_funds(gamePrice);
+		DatabaseManager::instance().modify_user(this->get_username(), this->get_available_funds());
+		m_ownedGames.push_back(pGame->get_game_id());
+		DatabaseManager::instance().store_bought_game(this, pGame);
+		cout << "You successfully bought the game - " << pGame->get_title() << " - " << endl ;
+	}
+	else {
+		cout << "You don't have enough money to buy this game!" << endl << endl;
+	}
+}
+
+void PlayerUser::add_game_to_list(const Game::GameId& id) {
+	m_ownedGames.push_back(id);
 }

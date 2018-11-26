@@ -54,16 +54,24 @@ public:
 	using GameList = std::list<Game::GameId>;
 	// inherit the constructor.
 	using UserBase::UserBase;
+
+	PlayerUser(const Username& username, const string& password, const string& email, const double fund);
 	// define the specific user type.
 	virtual const UserTypeId  get_user_type() const override;
-	const PlayerUser::GameList& get_game_list() const;
+	const GameList& get_game_list() const;
 	double get_available_funds() const;
-	void add_game_to_list();
-	void search_game();
+	void search_game_by_title();
+	void list_my_games();
+	void add_funds();
+	void withdraw_funds(const double val);
+	void buy_game();
+	void add_game_to_list(const Game::GameId& id);
+
+
 
 private:
 	GameList m_ownedGames; // List of owned games.
-	double m_accountFunds; // The players available funds.
+	double m_accountFunds = 0.0; // The players available funds.
 };
 
 //--
