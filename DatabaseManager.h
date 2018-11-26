@@ -36,6 +36,7 @@ public:
 	void store_user_data(string user, string pw, string mail, string usertype);
 	void store_game_data(string& title, string& description, double price);
 	void store_bought_game(PlayerUser* rPlayer, Game* rGame);
+	//void store_user_game(PlayerUser* rPlayer, Game* pGame);
 
 	// Adds a user to the db.
 	void add_user(UserBase* pUser);

@@ -205,6 +205,7 @@ void PlayerUser::buy_game() {
 		this->withdraw_funds(gamePrice);
 		DatabaseManager::instance().modify_user(this->get_username(), this->get_available_funds());
 		m_ownedGames.push_back(pGame->get_game_id());
+		//DatabaseManager::instance().store_user_game(this, pGame);
 		DatabaseManager::instance().store_bought_game(this, pGame);
 		cout << "You successfully bought the game - " << pGame->get_title() << " - " << endl ;
 	}
@@ -215,4 +216,27 @@ void PlayerUser::buy_game() {
 
 void PlayerUser::add_game_to_list(const Game::GameId& id) {
 	m_ownedGames.push_back(id);
+}
+
+void PlayerUser::play_game() {
+	string gameId;
+	int result = 0;
+
+	cout << "Which game do you want to play?";
+	cout << "ID: " << endl;
+	cin >> gameId;
+
+	auto pGame = DatabaseManager::instance().find_game(stoi(gameId));
+	cout << "Welcome" << endl;
+
+	while (result == 0) {
+		char option;
+		cout << "(q) Quit the Game" << endl;
+		cin >> option;
+		switch (option) {
+		case 'q': result = -1; break;
+		default:  cout << "INAVLID OPTION\n"; break;
+		}
+
+	}
 }

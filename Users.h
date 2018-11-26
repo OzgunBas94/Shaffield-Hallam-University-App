@@ -66,7 +66,7 @@ public:
 	void withdraw_funds(const double val);
 	void buy_game();
 	void add_game_to_list(const Game::GameId& id);
-
+	void play_game();
 
 
 private:
@@ -95,6 +95,7 @@ public:
 	void delete_game();
 
 	void modify_game(Game*& game, const int option, const int gameId);
+
 
 };
 

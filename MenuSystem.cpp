@@ -106,6 +106,7 @@ int MenuSystem::run_player_user_menu()
 		cout << "(3) Search Game\n";
 		cout << "(4) Buy Game\n";
 		cout << "(5) Add Funds\n";
+		cout << "(6) Play Game\n";
 		cout << "(q) Logout\n";
 
 		char option;
@@ -118,6 +119,7 @@ int MenuSystem::run_player_user_menu()
 		case '3': pPlayerUser->search_game_by_title(); break;
 		case '4': pPlayerUser->buy_game(); break;
 		case '5': pPlayerUser->add_funds(); break;
+		case '6': pPlayerUser->play_game(); break;
 		case 'q': result = -1; break;
 		default:  cout << "INAVLID OPTION\n"; break;
 		}

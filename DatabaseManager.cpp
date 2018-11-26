@@ -94,12 +94,14 @@ void DatabaseManager::load_user_game() {
 	ifstream file("listUserGames.txt", ios::app);
 
 	if (file.is_open()) {
-		while (getline(file, readFile)) {
-			username = get_token(readFile);
-			auto pUser = dynamic_cast<PlayerUser*>(find_user(username));
-			while ((gameId = get_token(readFile)) != "") {
-				Game::GameId id = stoi(gameId);
-				pUser->add_game_to_list(id);
+		if(!(file.peek()== ifstream::traits_type::eof())){
+			while (getline(file, readFile)) {
+				username = get_token(readFile);
+				auto pUser = dynamic_cast<PlayerUser*>(find_user(username));
+				while ((gameId = get_token(readFile)) != "") {
+					Game::GameId id = stoi(gameId);
+					pUser->add_game_to_list(id);
+				}
 			}
 		}
 		file.close();
@@ -168,24 +170,33 @@ void DatabaseManager::store_bought_game(PlayerUser* rPlayer, Game* rGame) {
 	string tmp;
 
 	if (file.is_open()) {
-		while (getline(file, readFile)) {
-			username = get_token(readFile);
-			tmp = username + ",";
-			while ((gameId = get_token(readFile)) != "") {
-				tmp += gameId;
-				tmp += ",";
+		if (!(file.peek() == ifstream::traits_type::eof())) {
+
+			while (getline(file, readFile)) {
+				username = get_token(readFile);
+				tmp = username + ",";
+				while ((gameId = get_token(readFile)) != "") {
+					tmp += gameId;
+					tmp += ",";
+				}
+				if (rPlayer->get_username() == username) {
+					string id = to_string(rGame->get_game_id()) + ",";
+					tmp += id;
+				}
+				tmp += '\n';
+				if (newFile.is_open()) {
+					newFile << tmp;
+				}
+				else {
+					cerr << "Couldn't open the file!";
+				}
 			}
-			if (rPlayer->get_username() == username) {
-				string id = to_string(rGame->get_game_id()) + ",";
-				tmp += id;
-			}
-			tmp += '\n';
-			if (newFile.is_open()) {
-				newFile << tmp;
-			}
-			else {
-				cerr << "Couldn't open the file!";
-			}
+		}
+		else {
+			username = rPlayer->get_username();
+			gameId = to_string(rGame->get_game_id());
+			tmp = username + "," + gameId + ",";
+			newFile << tmp;
 		}
 		file.close();
 		newFile.close();
@@ -360,6 +371,8 @@ Game* DatabaseManager::find_game_with_title(string& gameTitle) {
 	}
 	return nullptr;
 }
+
+
 
 string DatabaseManager::get_token(string& readFile) {
 
