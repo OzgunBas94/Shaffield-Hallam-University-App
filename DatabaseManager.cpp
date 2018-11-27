@@ -118,7 +118,41 @@ void DatabaseManager::load_user_game() {
 }
 
 void DatabaseManager::load_recorded_game_data() {
+	string readFile;
+	string username;
+	string gameTitel;
+	string date;
+	string time;
+	string length;
 
+	ifstream file("listRecordedGameData.txt", ios::app);
+
+	if (file.is_open()) {
+		if (!(file.peek() == ifstream::traits_type::eof())) {
+			while (getline(file, readFile)) {
+				username = get_token(readFile);
+				auto pUser = dynamic_cast<PlayerUser*>(find_user(username));
+				while ((gameTitel = get_token(readFile)) != "") {
+					date = get_token(readFile);
+					time = get_token(readFile);
+					length = get_token(readFile);
+					time = get_token(readFile);
+					length = get_token(readFile);
+
+
+					/*Game::GameId id = stoi(gameId);
+					Game* pGame = find_game(stoi(gameId));
+*/
+
+					pUser->add_recorded_data(gameTitel, date, time, length);
+				}
+			}
+		}
+		file.close();
+	}
+	else {
+		cerr << "Could not open the file!";
+	}
 }
 
 void DatabaseManager::store_user_data(string user, string pw, string mail, string userType)
@@ -177,7 +211,7 @@ void DatabaseManager::store_bought_game(PlayerUser* rPlayer, Game* rGame) {
 	string readFile;
 	string username;
 	string gameId;
-	string timeOfPurchase;
+	string dateOfPurchase;
 	bool gameIsStored = false;
 
 	string tmp;
@@ -191,20 +225,17 @@ void DatabaseManager::store_bought_game(PlayerUser* rPlayer, Game* rGame) {
 				while ((gameId = get_token(readFile)) != "") {
 					tmp += gameId;
 					tmp += ",";
-					timeOfPurchase = get_token(readFile);
-					tmp += timeOfPurchase;
+					dateOfPurchase = get_token(readFile);
+					tmp += dateOfPurchase;
 					tmp += ",";
 				}
 				if (rPlayer->get_username() == username) {
 					string id = to_string(rGame->get_game_id()) + ",";
 					tmp += id ;
 
-					time_t date = time(0);   // get time now
-					struct tm dateTime;
-					errno_t result;
-					result = localtime_s(&dateTime, &date);
-					timeOfPurchase = (to_string(dateTime.tm_mday )+ "/" +  to_string (dateTime.tm_mon )+ "/" + to_string(dateTime.tm_year));
-					tmp += timeOfPurchase + ","; 
+					dateOfPurchase = get_date_of_purchase();
+
+					tmp += dateOfPurchase + ",";
 
 					tmp += '\n';
 					if (newFile.is_open()) {
@@ -216,15 +247,10 @@ void DatabaseManager::store_bought_game(PlayerUser* rPlayer, Game* rGame) {
 					}
 				}
 				if(!gameIsStored){
-					time_t date = time(0);   // get time now
-					struct tm dateTime;
-					errno_t result;
-					result = localtime_s(&dateTime, &date);
-					timeOfPurchase = (to_string(dateTime.tm_mday) + "/" + to_string(dateTime.tm_mon + 1) + "/" + to_string(dateTime.tm_year + 1900));
-
+					dateOfPurchase = get_date_of_purchase();
 					username = rPlayer->get_username();
 					gameId = to_string(rGame->get_game_id());
-					tmp = username + "," + gameId + "," + timeOfPurchase + ",";
+					tmp = username + "," + gameId + "," + dateOfPurchase + ",";
 					newFile << tmp;
 
 					gameIsStored = true;
@@ -232,15 +258,11 @@ void DatabaseManager::store_bought_game(PlayerUser* rPlayer, Game* rGame) {
 			}
 		}
 		else {
-			time_t date = time(0);   // get time now
-			struct tm dateTime;
-			errno_t result;
-			result = localtime_s(&dateTime, &date);
-			timeOfPurchase = (to_string(dateTime.tm_mday) + "/" + to_string(dateTime.tm_mon +1) + "/" + to_string(dateTime.tm_year +1900));
-
+		
+			dateOfPurchase = get_date_of_purchase();
 			username = rPlayer->get_username();
 			gameId = to_string(rGame->get_game_id());
-			tmp = username + "," + gameId + "," + timeOfPurchase + "," ;
+			tmp = username + "," + gameId + "," + dateOfPurchase + "," ;
 			newFile << tmp;
 			gameIsStored = true;
 		}
@@ -254,7 +276,53 @@ void DatabaseManager::store_bought_game(PlayerUser* rPlayer, Game* rGame) {
 	}
 }
 
-void DatabaseManager::store_recorded_game_data() {
+const string DatabaseManager::get_date_of_purchase()const {
+	string dateOfPurchase;
+
+	time_t date = time(0);   // get time now
+	struct tm dateTime;
+	errno_t result;
+	result = localtime_s(&dateTime, &date);
+	dateOfPurchase = (to_string(dateTime.tm_mday) + "/" + to_string(dateTime.tm_mon + 1) + "/" + to_string(dateTime.tm_year + 1900));
+	return dateOfPurchase;
+}
+
+const string DatabaseManager::get_date_of_play_game()const {
+	string dateOfPurchase;
+
+	time_t date = time(0);   // get time now
+	struct tm dateTime;
+	errno_t result;
+	result = localtime_s(&dateTime, &date);
+	dateOfPurchase = (to_string(dateTime.tm_mday) + "/" + to_string(dateTime.tm_mon + 1) + "/" + to_string(dateTime.tm_year + 1900));
+	return dateOfPurchase;
+}
+
+void DatabaseManager::store_recorded_game_data(PlayerUser* rPlayer,const Game* rGame, const string date, string time, const double length) {
+
+	ofstream outfile("listRecordedGameData.txt", ios::app);
+	string readFile;
+	PlayerUser* pUser = rPlayer;
+	string username = rPlayer->get_username();
+	string game = rGame->get_title();
+	string dateOfPlaying = date;
+	string timeOfPlaying = time;
+	string lengthOfPlaying = to_string(length);
+	bool gameIsStored = false;
+
+	string tmp;
+
+
+	if (outfile.is_open()) {
+		outfile << username << "," << game << "," << dateOfPlaying << "," << timeOfPlaying << "," << lengthOfPlaying << endl;
+		outfile.close();
+		
+		pUser->add_recorded_data(game, dateOfPlaying, timeOfPlaying, lengthOfPlaying);
+		
+	}
+	else {
+		cout << "This Textfile does not exist!";
+	}
 
 }
 
@@ -342,8 +410,8 @@ void DatabaseManager::modify_game(Game*& mGame, const string& newGameDesc, const
 	gameFile.close();
 	outFile.close();
 
-	remove("listGames.txt");
-	rename("listOfGames.txt", "listGames.txt");
+	remove("listRecordedGameData.txt");
+	rename("listOfRecordedGameData.txt", "listRecordedGameData.txt");
 
 }
 
@@ -451,4 +519,8 @@ bool DatabaseManager::find_email(const string& mail) {
 	return false;
 }
 
-
+const string DatabaseManager::getTime()const {
+	SYSTEMTIME time;
+	GetLocalTime(&time);
+	return (to_string(time.wHour) + ":" + to_string(time.wMinute) + ":" + to_string(time.wSecond));
+}

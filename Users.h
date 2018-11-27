@@ -8,6 +8,7 @@
 #include <iostream>
 #include <map>
 #include "Game.h"
+#include "Stopwatch.h"
 
 class DatabaseManager;
 
@@ -51,10 +52,16 @@ private:
 //--
 class PlayerUser : public UserBase
 {
-public:
-	using GameList = std::list<Game::GameId>;
 
+typedef struct {
+	LARGE_INTEGER start;
+	LARGE_INTEGER stop;
+} stopWatch;
+
+public:
+	using GameList = list<Game::GameId>;
 	using UserGames = map<Game::GameId, Game*>;
+	using RecordedData = list<string>;
 
 	// inherit the constructor.
 	using UserBase::UserBase;
@@ -76,22 +83,32 @@ public:
 	const string get_date_of_bought_game() const;
 
 	void set_date_of_playing_game(const string& dateOfGame);
-	const string get_date_of_playing_game() const;
+	//const string get_date_of_playing_game() const;
 
 	void set_time_of_playing(const string& timeOfPlaying);
 	const string get_time_of_playing() const;
 
-	const map<Game::GameId, Game*> get_user_map() const;
-	void output_map();
+	void set_length_of_playing(string length);
+	const string get_length_of_playing() const;
 
+	const map<Game::GameId, Game*> get_user_map() const;
+	list<string>get_recorded_list();
+
+	double PlayerUser::to_secs(LARGE_INTEGER & L);
+
+	void add_recorded_data(string,string,string,string);
 
 private:
 	string dateOfPlay;
 	string date;
 	string time;
+	string length;
+	LARGE_INTEGER frequency;
 	UserGames m_usersGames;
 	//GameList m_ownedGames; // List of owned games.
 	double m_accountFunds = 0.0; // The players available funds.
+	stopWatch timer;
+	RecordedData m_recordedData;
 };
 
 //--

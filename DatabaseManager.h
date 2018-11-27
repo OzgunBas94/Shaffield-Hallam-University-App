@@ -38,7 +38,7 @@ public:
 	void store_user_data(string user, string pw, string mail, string usertype);
 	void store_game_data(string& title, string& description, double price);
 	void store_bought_game(PlayerUser* rPlayer, Game* rGame);
-	void store_recorded_game_data();
+	void store_recorded_game_data(PlayerUser* rPlayer, const Game* rGame, const string date, string time, const double length);
 
 	// Adds a user to the db.
 	void add_user(UserBase* pUser);
@@ -72,7 +72,9 @@ public:
 	void modify_user(const string& username, const double newFunds);
 	bool find_email(const string& mail);
 	const map<UserBase::Username, UserBase*> get_map() const;
-	
+	const string get_date_of_purchase()const;
+	const string get_date_of_play_game()const;
+	const string getTime()const;
 private:
 	// Constructors are private for singleton pattern.
 	DatabaseManager();

@@ -71,7 +71,6 @@ void AdminUser::add_user() {
 	}
 
 void AdminUser::add_game() {
-		int gameId;
 		string title;
 		string description;
 		double price;
@@ -134,22 +133,21 @@ const map<Game::GameId, Game*> PlayerUser::get_user_map() const {
 	return m_usersGames;
 }
 
-void PlayerUser::output_map() {
-	map<Game::GameId, Game*> map = get_user_map();
-	for (auto it : map) {
-		auto pGame = DatabaseManager::instance().find_game(it.first);
-		cout << pGame->get_game_id();
-	}
+ list<string>PlayerUser::get_recorded_list()  {
+	return m_recordedData;
 }
+
 void AdminUser::view_statistics() {
 	cout << "Which statistic you want to view" << endl;
 	cout << "(1) Records of all purchases" << endl;
 	cout << "(2) Time each player spends in each game" << endl;
+	string username, game, date, time, length;
 	
 	char option;
 	cin >> option;
 
 	map<UserBase::Username, UserBase*> myMap = DatabaseManager::instance().get_map();
+
 	//map<Game::GameId, Game*> gameMap = player->get_user_map();
 
 	switch (option) {
@@ -171,8 +169,40 @@ void AdminUser::view_statistics() {
 
 			}
 		}break;
-	case '2':  cout << "TODO";
-	//DatabaseManager::instance().store_recorded_game_data(); break;
+
+	case '2': 
+		//Game* pGame;
+		
+		if (!myMap.empty()) {
+			for (map<UserBase::Username, UserBase*>::iterator it = myMap.begin(); it != myMap.end(); ++it) {
+				if (it->second->get_user_type() == UserTypeId::kPlayerUser) {
+					PlayerUser* pUser = dynamic_cast<PlayerUser*>(it->second);
+					list <string> recordedList = pUser->get_recorded_list();
+					
+						list<string>::const_iterator it2 = recordedList.begin();
+						if (recordedList.size()>0) {
+							cout << pUser->get_username();
+						while (it2 != recordedList.end()) {
+							{
+								game = *it2;
+								date = *(++it2);
+								time = *(++it2);
+								length = *(++it2);
+								cout << "played " << game << " on " << date << " at " << time << " for" << length << endl;
+								++it2;
+
+							//pGame = DatabaseManager::instance().find_game(it2->get_game_id());
+							//DatabaseManager::instance().store_recorded_game_data(player, pGame);
+								//cout <<game
+							}
+						}
+					}
+
+				}
+
+			}
+		} break;
+
 	default:  cout << "INAVLID OPTION\n"; break;
 	}
 }
@@ -269,16 +299,28 @@ void PlayerUser::add_game_to_map(const Game::GameId& id, Game* pGame) {
 	m_usersGames.insert(make_pair(id, pGame));
 }
 
+void PlayerUser::add_recorded_data( string game, string date, string time, string length) {
+	m_recordedData.push_back(game);
+	m_recordedData.push_back(date);
+	m_recordedData.push_back(time);
+	m_recordedData.push_back(length);
+}	
 
 void PlayerUser::play_game() {
 	string gameId;
 	int result = 0;
+	string date;
+	string time;
+	double length;
 
-	cout << "Which game do you want to play?";
-	cout << "ID: " << endl;
+	cout << "Which game do you want to play? \n";
+	cout << "ID: ";
 	cin >> gameId;
 
 	auto pGame = DatabaseManager::instance().find_game(stoi(gameId));
+	CStopWatch stopwatch;
+	stopwatch.startTimer();
+
 	cout << "Welcome to -- " << pGame->get_title() << " --" <<endl;
 
 	while (result == 0) {
@@ -286,11 +328,23 @@ void PlayerUser::play_game() {
 		cout << "(q) Quit the Game" << endl;
 		cin >> option;
 		switch (option) {
-		case 'q': result = -1; break;
+		case 'q': 
+		
+			
+			date = DatabaseManager::instance().get_date_of_play_game();
+			time = DatabaseManager::instance().getTime();
+			stopwatch.stopTimer();
+			length = stopwatch.getElapsedTime();
+			
+			DatabaseManager::instance().store_recorded_game_data(this,pGame,date,time,length);
+			
+			result = -1;
+			break;
 		default:  cout << "INAVLID OPTION\n"; break;
 		}
 
 	}
+	cout << length;
 }
 
 void PlayerUser::set_date_of_bought_game(const string& dateOfGame) {
@@ -305,14 +359,21 @@ void PlayerUser::set_date_of_playing_game(const string& dateOfPlayingGame) {
 	dateOfPlay = dateOfPlayingGame;
 }
 
-const string PlayerUser::get_date_of_playing_game() const {
-	return dateOfPlay;
-}
-
 void PlayerUser::set_time_of_playing(const string& timeOfPlaying) {
 	time = timeOfPlaying;
 }
 
-const string PlayerUser::get_time_of_playing() const {
+ const string PlayerUser::get_time_of_playing() const {
 	return time;
 }
+
+void PlayerUser::set_length_of_playing(string lengthOfPlaying) {
+
+	length = lengthOfPlaying;
+}
+
+const string PlayerUser::get_length_of_playing() const {
+	return length;
+}
+
+
