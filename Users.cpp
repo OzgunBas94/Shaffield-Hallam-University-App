@@ -129,6 +129,54 @@ void AdminUser::modify_game(Game*& game, const int option, const int gameId) {
 	}
 
 }
+
+const map<Game::GameId, Game*> PlayerUser::get_user_map() const {
+	return m_usersGames;
+}
+
+void PlayerUser::output_map() {
+	map<Game::GameId, Game*> map = get_user_map();
+	for (auto it : map) {
+		auto pGame = DatabaseManager::instance().find_game(it.first);
+		cout << pGame->get_game_id();
+	}
+}
+void AdminUser::view_statistics() {
+	cout << "Which statistic you want to view" << endl;
+	cout << "(1) Records of all purchases" << endl;
+	cout << "(2) Time each player spends in each game" << endl;
+	
+	char option;
+	cin >> option;
+
+	map<UserBase::Username, UserBase*> myMap = DatabaseManager::instance().get_map();
+	//map<Game::GameId, Game*> gameMap = player->get_user_map();
+
+	switch (option) {
+	case '1':
+		if (!myMap.empty()) {
+			for (map<UserBase::Username, UserBase*>::const_iterator it = myMap.begin(); it != myMap.end(); ++it) {
+				if (it->second->get_user_type() == UserTypeId::kPlayerUser) {
+					PlayerUser* pUser = dynamic_cast<PlayerUser*>(it->second);
+					if (!pUser->get_user_map().empty()) {
+						for (auto it: pUser->get_user_map()) {
+							{
+								cout << pUser->get_username() << " has bought " << it.second->get_title() << " " << it.second->get_game_id() << " " << pUser->get_date_of_bought_game() << endl;
+							}
+
+						}
+					}
+
+				}
+
+			}
+		}break;
+	case '2':  cout << "TODO";
+	//DatabaseManager::instance().store_recorded_game_data(); break;
+	default:  cout << "INAVLID OPTION\n"; break;
+	}
+}
+
 //_____________PlayerUser_____________
 
 PlayerUser::PlayerUser(const Username& username, const string& password, const string& email, const double fund)
@@ -138,9 +186,9 @@ const UserTypeId PlayerUser::get_user_type() const {
 	return UserTypeId::kPlayerUser;
 }
 
-const PlayerUser::GameList& PlayerUser::get_game_list() const {
-	return m_ownedGames;
-}
+//const PlayerUser::GameList& PlayerUser::get_game_list() const {
+//	return m_ownedGames;
+//}
 
 double PlayerUser::get_available_funds() const {
 	return m_accountFunds;
@@ -164,10 +212,15 @@ void PlayerUser::search_game_by_title() {
 
 void PlayerUser::list_my_games() {
 	cout << "My games:" << endl;
-	GameList ownedGames = get_game_list();
-	for (list<Game::GameId>::const_iterator it = ownedGames.begin(); it != ownedGames.end(); ++it) {
-		auto pGame = DatabaseManager::instance().find_game(*it);
-		cout << "ID: " << pGame->get_game_id() << " TITLE: " << pGame->get_title() << " DESCRIPTION: " << pGame->get_description() << endl;
+	UserGames m_usersGamesMap = get_user_map();
+	if (!m_usersGamesMap.empty()) {
+		for (auto it : m_usersGamesMap) {
+			auto pGame = DatabaseManager::instance().find_game(it.first);
+			cout << "ID: " << pGame->get_game_id() << " TITLE: " << pGame->get_title() << " DESCRIPTION: " << pGame->get_description() << endl;
+		}
+	}
+	else {
+		cout << "map is empty" << endl;
 	}
 }
 
@@ -204,8 +257,7 @@ void PlayerUser::buy_game() {
 	if (userFunds >= gamePrice) {
 		this->withdraw_funds(gamePrice);
 		DatabaseManager::instance().modify_user(this->get_username(), this->get_available_funds());
-		m_ownedGames.push_back(pGame->get_game_id());
-		//DatabaseManager::instance().store_user_game(this, pGame);
+		add_game_to_map(pGame->get_game_id(),pGame);
 		DatabaseManager::instance().store_bought_game(this, pGame);
 		cout << "You successfully bought the game - " << pGame->get_title() << " - " << endl ;
 	}
@@ -213,10 +265,10 @@ void PlayerUser::buy_game() {
 		cout << "You don't have enough money to buy this game!" << endl << endl;
 	}
 }
-
-void PlayerUser::add_game_to_list(const Game::GameId& id) {
-	m_ownedGames.push_back(id);
+void PlayerUser::add_game_to_map(const Game::GameId& id, Game* pGame) {
+	m_usersGames.insert(make_pair(id, pGame));
 }
+
 
 void PlayerUser::play_game() {
 	string gameId;
@@ -227,7 +279,7 @@ void PlayerUser::play_game() {
 	cin >> gameId;
 
 	auto pGame = DatabaseManager::instance().find_game(stoi(gameId));
-	cout << "Welcome" << endl;
+	cout << "Welcome to -- " << pGame->get_title() << " --" <<endl;
 
 	while (result == 0) {
 		char option;
@@ -239,4 +291,28 @@ void PlayerUser::play_game() {
 		}
 
 	}
+}
+
+void PlayerUser::set_date_of_bought_game(const string& dateOfGame) {
+	  date = dateOfGame;
+}
+
+const string PlayerUser::get_date_of_bought_game() const{
+	return date;
+}
+
+void PlayerUser::set_date_of_playing_game(const string& dateOfPlayingGame) {
+	dateOfPlay = dateOfPlayingGame;
+}
+
+const string PlayerUser::get_date_of_playing_game() const {
+	return dateOfPlay;
+}
+
+void PlayerUser::set_time_of_playing(const string& timeOfPlaying) {
+	time = timeOfPlaying;
+}
+
+const string PlayerUser::get_time_of_playing() const {
+	return time;
 }

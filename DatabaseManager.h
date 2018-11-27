@@ -12,6 +12,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <ctime>
 
 using namespace std;
 
@@ -30,13 +31,14 @@ public:
 	void load_user_list();
 	void load_game_list();
 	void load_user_game();
+	void load_recorded_game_data();
 
 
 	// Write all the data to storage.
 	void store_user_data(string user, string pw, string mail, string usertype);
 	void store_game_data(string& title, string& description, double price);
 	void store_bought_game(PlayerUser* rPlayer, Game* rGame);
-	//void store_user_game(PlayerUser* rPlayer, Game* pGame);
+	void store_recorded_game_data();
 
 	// Adds a user to the db.
 	void add_user(UserBase* pUser);
@@ -69,6 +71,8 @@ public:
 	string to_lower_string(string& lowerString);
 	void modify_user(const string& username, const double newFunds);
 	bool find_email(const string& mail);
+	const map<UserBase::Username, UserBase*> get_map() const;
+	
 private:
 	// Constructors are private for singleton pattern.
 	DatabaseManager();

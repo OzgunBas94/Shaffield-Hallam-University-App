@@ -69,6 +69,7 @@ int MenuSystem::run_admin_user_menu()
 		cout << "(4) Modify Game\n";
 		cout << "(5) Delete Game\n";
 		cout << "(6) Add User\n";
+		cout << "(7) View Statistics \n";
 		cout << "(q) Logout\n";
 
 		char option;
@@ -82,6 +83,7 @@ int MenuSystem::run_admin_user_menu()
 		case '4': modify_game(); break;
 		case '5': pAdminUser->delete_game(); break;
 		case '6': pAdminUser->add_user(); break;
+		case '7':pAdminUser->view_statistics(); break;
 		case 'q': result = -1; break;
 		default:  cout << "INAVLID OPTION\n"; break;
 		}

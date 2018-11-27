@@ -6,6 +6,7 @@
 #include <string>
 #include <list>
 #include <iostream>
+#include <map>
 #include "Game.h"
 
 class DatabaseManager;
@@ -52,25 +53,44 @@ class PlayerUser : public UserBase
 {
 public:
 	using GameList = std::list<Game::GameId>;
+
+	using UserGames = map<Game::GameId, Game*>;
+
 	// inherit the constructor.
 	using UserBase::UserBase;
 
 	PlayerUser(const Username& username, const string& password, const string& email, const double fund);
 	// define the specific user type.
 	virtual const UserTypeId  get_user_type() const override;
-	const GameList& get_game_list() const;
+	//const GameList& get_game_list() const;
 	double get_available_funds() const;
 	void search_game_by_title();
 	void list_my_games();
 	void add_funds();
 	void withdraw_funds(const double val);
 	void buy_game();
-	void add_game_to_list(const Game::GameId& id);
+	void add_game_to_map(const Game::GameId& id, Game* pGame);
 	void play_game();
+
+	void set_date_of_bought_game(const string& dateOfGame);
+	const string get_date_of_bought_game() const;
+
+	void set_date_of_playing_game(const string& dateOfGame);
+	const string get_date_of_playing_game() const;
+
+	void set_time_of_playing(const string& timeOfPlaying);
+	const string get_time_of_playing() const;
+
+	const map<Game::GameId, Game*> get_user_map() const;
+	void output_map();
 
 
 private:
-	GameList m_ownedGames; // List of owned games.
+	string dateOfPlay;
+	string date;
+	string time;
+	UserGames m_usersGames;
+	//GameList m_ownedGames; // List of owned games.
 	double m_accountFunds = 0.0; // The players available funds.
 };
 
@@ -95,6 +115,8 @@ public:
 	void delete_game();
 
 	void modify_game(Game*& game, const int option, const int gameId);
+
+	void view_statistics();
 
 
 };
