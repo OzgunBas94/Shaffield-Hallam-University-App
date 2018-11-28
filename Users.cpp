@@ -276,7 +276,7 @@ void PlayerUser::buy_game() {
 		this->withdraw_funds(gamePrice);
 		DatabaseManager::instance().modify_user(this->get_username(), this->get_available_funds());
 		add_game_to_map(pGame->get_game_id(),pGame);
-		DatabaseManager::instance().store_bought_game(this, pGame);
+		DatabaseManager::instance().store_purchased_game(this, pGame);
 		cout << "You successfully bought the game - " << pGame->get_title() << " - " << endl ;
 	}
 	else {
@@ -335,7 +335,7 @@ void PlayerUser::play_game() {
 	cout << length;
 }
 
-void PlayerUser::set_date_of_bought_game(const string& dateOfGame) {
+void PlayerUser::set_date_purchased_game(const string& dateOfGame) {
 	  date = dateOfGame;
 }
 
@@ -363,6 +363,10 @@ void PlayerUser::set_length_of_playing(string lengthOfPlaying) {
 const string PlayerUser::get_length_of_playing() const {
 	return length;
 }
+
+//void PlayerUser::set_purchased_time(const string& timestemp) {
+//	time = timestemp;
+//}
 
 //_____________________________________________________GUEST________________________________________________________
 

@@ -37,7 +37,7 @@ public:
 	// Write all the data to storage.
 	void store_user_data(string user, string pw, string mail, string usertype);
 	void store_game_data(string& title, string& description, double price);
-	void store_bought_game(PlayerUser* rPlayer, Game* rGame);
+	void store_purchased_game(PlayerUser* rPlayer, Game* rGame);
 	void store_recorded_game_data(PlayerUser* rPlayer, const Game* rGame, const string date, string time, const double length);
 
 	// Adds a user to the db.

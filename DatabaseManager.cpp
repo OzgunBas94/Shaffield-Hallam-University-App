@@ -105,7 +105,7 @@ void DatabaseManager::load_user_game() {
 				auto pUser = dynamic_cast<PlayerUser*>(find_user(username));
 				while ((gameId = get_token(readFile)) != "") {
 					date = get_token(readFile);
-					pUser->set_date_of_bought_game(date);
+					pUser->set_date_purchased_game(date);
 					Game::GameId id = stoi(gameId);
 					Game* pGame = find_game(stoi(gameId));
 					pUser->add_game_to_map(id,pGame);
@@ -204,21 +204,14 @@ void DatabaseManager::store_game_data(string& title, string& description, double
 	}
 
 }
-
-void DatabaseManager::store_bought_game(PlayerUser* rPlayer, Game* rGame) {
+void DatabaseManager::store_purchased_game(PlayerUser* rPlayer, Game* rGame) {
 	ifstream file("listUserGames.txt", ios::app);
 	ofstream newFile("listOfUserGames.txt", ios::app);
-	string readFile;
-	string username;
-	string gameId;
-	string dateOfPurchase;
+	string readFile, tmp, username, gameId, dateOfPurchase;
 	bool gameIsStored = false;
-
-	string tmp;
 
 	if (file.is_open()) {
 		if (!(file.peek() == ifstream::traits_type::eof())) {
-
 			while (getline(file, readFile)) {
 				username = get_token(readFile);
 				tmp = username + ",";
@@ -230,41 +223,44 @@ void DatabaseManager::store_bought_game(PlayerUser* rPlayer, Game* rGame) {
 					tmp += ",";
 				}
 				if (rPlayer->get_username() == username) {
+					dateOfPurchase = get_date_of_purchase();
 					string id = to_string(rGame->get_game_id()) + ",";
-					tmp += id ;
-
-					dateOfPurchase = get_date_of_purchase();
-
-					tmp += dateOfPurchase + ",";
-
-					tmp += '\n';
-					if (newFile.is_open()) {
-						newFile << tmp;
-						gameIsStored = true;
-					}
-					else {
-						cerr << "Couldn't open the file!";
-					}
-				}
-				if(!gameIsStored){
-					dateOfPurchase = get_date_of_purchase();
-					username = rPlayer->get_username();
-					gameId = to_string(rGame->get_game_id());
-					tmp = username + "," + gameId + "," + dateOfPurchase + ",";
-					newFile << tmp;
-
+					tmp += id;
+					tmp += dateOfPurchase;
+					tmp += ",";
 					gameIsStored = true;
+					rPlayer->set_date_purchased_game(dateOfPurchase);
+				}
+				tmp += '\n';
+				if (newFile.is_open()) {
+					newFile << tmp;
+				}
+				else {
+					cerr << "Couldn't open the file!";
+				}
+			}
+			if (!gameIsStored) {
+				tmp = rPlayer->get_username() + "," + to_string(rGame->get_game_id()) + "," + get_date_of_purchase() + ",";
+				rPlayer->set_date_purchased_game(dateOfPurchase);
+				if (newFile.is_open()) {
+					newFile << tmp;
+				}
+				else {
+					cerr << "Couldn't open the file!";
 				}
 			}
 		}
 		else {
-		
-			dateOfPurchase = get_date_of_purchase();
 			username = rPlayer->get_username();
 			gameId = to_string(rGame->get_game_id());
-			tmp = username + "," + gameId + "," + dateOfPurchase + "," ;
-			newFile << tmp;
-			gameIsStored = true;
+			tmp = username + "," + gameId + "," + get_date_of_purchase() + ",";
+			rPlayer->set_date_purchased_game(dateOfPurchase);
+			if (newFile.is_open()) {
+				newFile << tmp;
+			}
+			else {
+				cerr << "Couldn't open the file!";
+			}
 		}
 		file.close();
 		newFile.close();

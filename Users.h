@@ -90,7 +90,7 @@ public:
 	void add_recorded_data(string, string, string, string);
 
 
-	void set_date_of_bought_game(const string& dateOfGame);
+	void set_date_purchased_game(const string& dateOfGame);
 	const string get_date_of_bought_game() const;
 
 	void set_date_of_playing_game(const string& dateOfGame);
@@ -104,7 +104,7 @@ public:
 
 	const map<Game::GameId, Game*> get_user_map() const;
 	list<string>get_recorded_list();
-
+	//void set_purchased_time(const string& timestemp);
 	
 
 private:
