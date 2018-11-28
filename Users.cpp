@@ -233,6 +233,15 @@ void PlayerUser::search_game_by_title() {
 		cout << "title: " << pGame->get_title() << " description: " << pGame->get_description() << " price: " << pGame->get_price() << endl << endl;
 	}
 }
+void PlayerUser::list_games_by_ageRating() {
+	int age;
+	cout << "Until which age rating do you want to list the games? " << endl;
+	cout << "Age rating: ";
+	cin >> age;
+
+	DatabaseManager::instance().list_games_by_age_rating(age);
+
+}
 
 void PlayerUser::list_my_games() {
 	cout << "My games:" << endl;

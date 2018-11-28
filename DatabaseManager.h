@@ -77,6 +77,7 @@ public:
 	const string getTime()const;
 	UserBase* find_guest(const string& email);
 	void add_guest(UserBase* pUser);
+	void list_games_by_age_rating(int age);
 private:
 	// Constructors are private for singleton pattern.
 	DatabaseManager();

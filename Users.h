@@ -105,7 +105,8 @@ public:
 
 	const map<Game::GameId, Game*> get_user_map() const;
 	list<string>get_recorded_list();
-	//void set_purchased_time(const string& timestemp);
+
+	void list_games_by_ageRating();
 	
 
 private:

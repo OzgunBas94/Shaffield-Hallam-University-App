@@ -494,6 +494,19 @@ Game* DatabaseManager::find_game_with_title(string& gameTitle) {
 	return nullptr;
 }
 
+void DatabaseManager::list_games_by_age_rating(int age) {
+	int ageRating = age;
+
+	auto it = m_games.begin();
+	while (it != m_games.end()) {
+		if (it->second.get_ageRating() <= ageRating) {
+			cout << "ID: " << it->second.get_game_id() << " Title: " << it->second.get_title() << " Price: " << it->second.get_price() << " Age rating: " << it->second.get_ageRating() << endl;
+		}
+		++it;
+	}
+}
+
+
 const map<UserBase::Username, UserBase*> DatabaseManager::get_map() const {
 	return m_users;
 }
