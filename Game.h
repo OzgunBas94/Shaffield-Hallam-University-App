@@ -39,12 +39,21 @@ public:
 
 	void set_ageRating(const int val) { m_ageRating = val; }
 
+	const int get_gameCounter() const {
+		return gameCounter;
+	}
+
+	void increment_gameCounter() {
+		++gameCounter;
+	}
+
 private:
 	const GameId m_gameId;	// Numerical identifier for a game  (unique key).
 	string m_title; // The game title.
 	string m_description; // Some information about the game.
 	double m_price; //The price of the game.
 	int m_ageRating;
+	int gameCounter =0; 
 };
 
 

@@ -132,7 +132,6 @@ void AdminUser::modify_game(Game*& game, const int option, const int gameId) {
 		DatabaseManager::instance().modify_game(game,"", newGamePrice);
 		cout << "You have changed the description successfully!" << endl;
 	}
-
 }
 
 const map<Game::GameId, Game*> PlayerUser::get_user_map() const {
@@ -144,15 +143,23 @@ const map<Game::GameId, Game*> PlayerUser::get_user_map() const {
 }
 
 void AdminUser::view_statistics() {
+	string username, game, date, time, length;
+	auto allGames = DatabaseManager::instance().get_games_map();
+	list<Game> mostPurchasedGamesList;
+	auto it3 = allGames.begin();
+	auto mostPurchased = it3;
+
 	cout << "Which statistic you want to view" << endl;
 	cout << "(1) Records of all purchases" << endl;
 	cout << "(2) Time each player spends in each game" << endl;
-	string username, game, date, time, length;
-	
+	cout << "(3) Most purchased game" << endl;
+	cout << "(4) Avarage game price" << endl;
+
 	char option;
 	cin >> option;
 
 	map<UserBase::Username, UserBase*> myMap = DatabaseManager::instance().get_map();
+	//map<string, int> myMap = DatabaseManager::instance().get_map();
 	switch (option) {
 	case '1':
 		if (!myMap.empty()) {
@@ -161,9 +168,7 @@ void AdminUser::view_statistics() {
 					PlayerUser* pUser = dynamic_cast<PlayerUser*>(it->second);
 					if (!pUser->get_user_map().empty()) {
 						for (auto it: pUser->get_user_map()) {
-							{
 								cout << pUser->get_username() << " has bought " << it.second->get_title() << " " << it.second->get_game_id() << " " << pUser->get_date_of_bought_game() << endl;
-							}
 
 						}
 					}
@@ -190,7 +195,7 @@ void AdminUser::view_statistics() {
 								date = *(++it2);
 								time = *(++it2);
 								length = *(++it2);
-								cout << "played " << game << " on " << date << " at " << time << " for" << length << endl;
+								cout << " played " << game << " on " << date << " at " << time << " for " << length << " secconds" << endl;
 								++it2;
 							}
 						}
@@ -200,9 +205,49 @@ void AdminUser::view_statistics() {
 
 			}
 		} break;
+	case '3': 
+		int tmp;
+		int gameId;
+		tmp = it3->second.get_gameCounter();
+		++it3;
+			while (it3 != allGames.end()) {
+				if (tmp <= it3->second.get_gameCounter()) {
+					if (tmp < it3->second.get_gameCounter()) {
+						tmp = it3->second.get_gameCounter();
+						mostPurchasedGamesList.clear();
+						mostPurchased = it3;
+					}
+					else {
+						mostPurchasedGamesList.push_back(it3->second);
+					}
+				}
+				++it3;
+			}
+			if (mostPurchasedGamesList.empty()) {
+				cout << endl << "The most purchased game is: " << mostPurchased->second.get_title() << " ("
+					<< mostPurchased->second.get_gameCounter() << " time(s))" << endl;
+			} else {
+				cout << endl << "The most purchased games are with " << mostPurchased->second.get_gameCounter()<< " time(s):"
+					<< endl << mostPurchased->second.get_title() << endl;
+				for (auto it : mostPurchasedGamesList) {
+					cout << "- " << it.get_title() << endl;
+				}
+				cout << endl;
+			} break;
+	
+	case '4':
+		double avarageGamePrice;
+		double gamePrice = 0.0;
+		for (auto it : allGames) {
+			gamePrice += it.second.get_price();
+		}
+		avarageGamePrice = gamePrice / allGames.size();
+		cout << "The avarage game price of the games are " << avarageGamePrice << " \x9C" << endl;
+		break;
 
-	default:  cout << "INAVLID OPTION\n"; break;
+	//default:  cout << "INAVLID OPTION\n"; break;
 	}
+
 }
 
 //_____________PlayerUser_____________

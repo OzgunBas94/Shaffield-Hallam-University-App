@@ -110,6 +110,7 @@ void DatabaseManager::load_user_game() {
 					Game::GameId id = stoi(gameId);
 					Game* pGame = find_game(stoi(gameId));
 					pUser->add_game_to_map(id,pGame);
+					pGame->increment_gameCounter();
 
 				}
 			}
@@ -202,6 +203,7 @@ void DatabaseManager::store_game_data(const string& title,  const string& descri
 		outFile << id << ',' << gameTitle << ',' << gameDesc << ',' << to_string(gamePrice) << "," << to_string(ageRating) << ";" << endl;
 		outFile.close();
 		add_game(Game(id, gameTitle, gameDesc, gamePrice, ageRating));
+		
 		cout << "You added the game: " << title << endl;
 	}
 
@@ -232,6 +234,7 @@ void DatabaseManager::store_purchased_game(PlayerUser* rPlayer, Game* rGame) {
 					tmp += ",";
 					gameIsStored = true;
 					rPlayer->set_date_purchased_game(dateOfPurchase);
+					rGame->increment_gameCounter();
 				}
 				tmp += '\n';
 				if (newFile.is_open()) {
@@ -506,6 +509,10 @@ void DatabaseManager::list_games_by_age_rating(int age) {
 	}
 }
 
+const map<Game::GameId, Game> DatabaseManager::get_games_map() const
+{
+	return m_games;
+}
 
 const map<UserBase::Username, UserBase*> DatabaseManager::get_map() const {
 	return m_users;
@@ -554,3 +561,5 @@ const string DatabaseManager::getTime()const {
 	GetLocalTime(&time);
 	return (to_string(time.wHour) + ":" + to_string(time.wMinute) + ":" + to_string(time.wSecond));
 }
+
+

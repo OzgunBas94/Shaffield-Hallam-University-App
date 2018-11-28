@@ -64,6 +64,11 @@ public:
 		for (auto it : m_games) { func(it.second); }
 	}
 
+	// Types
+	using UserContainer = map<UserBase::Username, UserBase*>;
+	using GameContainer = map<Game::GameId, Game>;
+	using UserGuest = list<UserBase*>;
+
 	string get_token(string& readFile);
 	void remove_game(const string& gameId);
 	void modify_game(Game*& game, const string& newGameDesc, const string& newGamePrice);
@@ -78,6 +83,8 @@ public:
 	UserBase* find_guest(const string& email);
 	void add_guest(UserBase* pUser);
 	void list_games_by_age_rating(int age);
+	const map<Game::GameId, Game> get_games_map()const;
+
 private:
 	// Constructors are private for singleton pattern.
 	DatabaseManager();
@@ -85,12 +92,6 @@ private:
 
 
 private:
-	// Types
-	using UserContainer = map<UserBase::Username, UserBase*>;
-	using GameContainer = map<Game::GameId, Game>;
-	using UserGuest = list<UserBase*>;
-
-
 	UserGuest guestList;
 	UserContainer m_users;
 	GameContainer m_games;
