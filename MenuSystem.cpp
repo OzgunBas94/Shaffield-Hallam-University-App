@@ -14,7 +14,7 @@ MenuSystem& MenuSystem::instance()
 void MenuSystem::list_all_games() const
 {
 	auto gameVisitorLambda = [](const Game& rGame) {
-		cout << rGame.get_game_id() << " " << rGame.get_title() << ": " << rGame.get_description() << " " << rGame.get_price() << " " << "\n";
+		cout << "ID: " << rGame.get_game_id() << "  " << rGame.get_title() << ": " << rGame.get_description() << "  Price: " << rGame.get_price() << "  Age rating: " << rGame.get_ageRating() << endl;
 	};
 	DatabaseManager::instance().visit_games(gameVisitorLambda);
 }
@@ -149,25 +149,25 @@ int MenuSystem::run_guest_user_menu(){
 	auto pGuest = DatabaseManager::instance().find_guest(email);
 	if (pGuest == nullptr) {
 
-	DatabaseManager::instance().store_user_data("Guest", "-", email, "guest");
+	DatabaseManager::instance().store_user_data("Guest", "-", email, "guest", 0);
 
 	}
 	cout << endl << "Hello guest, do you maybe want to sign in?" << endl;
 
-	//cout << "(1) YES\n";
-	//cout << "(2) NO\n";
-	//cout << "(q) Quit\n";
+	cout << "(1) YES\n";
+	cout << "(2) NO\n";
+	cout << "(q) Quit\n";
 
-	//char option;
-	//cin >> option;
+	char option;
+	cin >> option;
 
-	//switch (option)
-	//{
-	//case '1': cout<< "Username: \nPassword: "<< endl; break;
+	switch (option)
+	{
+	case '1': cout << "Username: \nPassword: "; break;
 	//case '2': result = -1; break;
-	//case 'q': result = -1;  break;
-	//default:  cout << "INAVLID OPTION\n"; break;
-	//}
+	case 'q': result = -1;  break;
+	default:  cout << "INAVLID OPTION\n"; break;
+	}
 
 
 	return 0;

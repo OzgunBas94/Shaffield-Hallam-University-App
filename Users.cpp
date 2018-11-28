@@ -41,6 +41,7 @@ void AdminUser::add_user() {
 	string password;
 	string email;
 	string userType;
+	string age;
 
 		cout << "Add new user." << endl;
 		cout << "Username: ";
@@ -59,6 +60,8 @@ void AdminUser::add_user() {
 			cout << "Email: ";
 			cin >> email;
 		}
+		cout << "Age: ";
+		cin >> age;
 		cout << "Usertype (admin/player): ";
 		cin >> userType;
 		while (! (userType != "admin" || userType != "Admin"
@@ -67,13 +70,14 @@ void AdminUser::add_user() {
 			cin >> userType;
 		}
 
-		DatabaseManager::instance().store_user_data(username, password, email, userType);
+		DatabaseManager::instance().store_user_data(username, password, email, userType, stoi(age));
 	}
 
 void AdminUser::add_game() {
 		string title;
 		string description;
 		double price;
+		string ageRating;
 
 		cout << "Add new game." << endl;
 		cout << "Title: ";
@@ -83,8 +87,10 @@ void AdminUser::add_game() {
 		getline(cin, description);
 		cout << "Price: ";
 		cin >> price;
+		cout << "Define an age rating for this game: ";
+		cin >> ageRating;
 
-		DatabaseManager::instance().store_game_data(title, description, price);
+		DatabaseManager::instance().store_game_data(title, description, price, stoi(ageRating));
 }
 
 void AdminUser::list_all_users() const
@@ -201,8 +207,8 @@ void AdminUser::view_statistics() {
 
 //_____________PlayerUser_____________
 
-PlayerUser::PlayerUser(const Username& username, const string& password, const string& email, const double fund)
-	: UserBase(username, password, email), m_accountFunds(fund) {}
+PlayerUser::PlayerUser(const Username& username, const string& password, const string& email, const int age, const double fund)
+	: UserBase(username, password, email),  m_age(age), m_accountFunds(fund) {}
 
 const UserTypeId PlayerUser::get_user_type() const {
 	return UserTypeId::kPlayerUser;
@@ -263,26 +269,31 @@ void PlayerUser::buy_game() {
 	string id;
 
 	cout << "Enter the ID of the game: ";
-	cin.ignore();
-	getline(cin, id);
+	cin >> id;
+
 	if (id != "") {
 		pGame = DatabaseManager::instance().find_game(stoi(id));
 	}
-	if (pGame != nullptr) {
-		gamePrice = pGame->get_price();
+	if (this->get_age_of_player() >= pGame->get_ageRating()) {
+		if (pGame != nullptr) {
+			gamePrice = pGame->get_price();
+		}
+		userFunds = this->get_available_funds();
+		if (userFunds >= gamePrice) {
+			this->withdraw_funds(gamePrice);
+			DatabaseManager::instance().modify_user(this->get_username(), this->get_available_funds());
+			add_game_to_map(pGame->get_game_id(), pGame);
+			DatabaseManager::instance().store_purchased_game(this, pGame);
+			cout << "You successfully bought the game - " << pGame->get_title() << " - " << endl;
+		}
+		else {
+			cout << "You don't have enough money to buy this game!" << endl << endl;
+		}
+	}else {
+			cout << "You are to young to buy this game." << endl;
+		}
 	}
-	userFunds = this->get_available_funds();
-	if (userFunds >= gamePrice) {
-		this->withdraw_funds(gamePrice);
-		DatabaseManager::instance().modify_user(this->get_username(), this->get_available_funds());
-		add_game_to_map(pGame->get_game_id(),pGame);
-		DatabaseManager::instance().store_purchased_game(this, pGame);
-		cout << "You successfully bought the game - " << pGame->get_title() << " - " << endl ;
-	}
-	else {
-		cout << "You don't have enough money to buy this game!" << endl << endl;
-	}
-}
+
 void PlayerUser::add_game_to_map(const Game::GameId& id, Game* pGame) {
 	m_usersGames.insert(make_pair(id, pGame));
 }
@@ -362,6 +373,10 @@ void PlayerUser::set_length_of_playing(string lengthOfPlaying) {
 
 const string PlayerUser::get_length_of_playing() const {
 	return length;
+}
+
+const int PlayerUser::get_age_of_player() const {
+	return m_age;
 }
 
 //void PlayerUser::set_purchased_time(const string& timestemp) {

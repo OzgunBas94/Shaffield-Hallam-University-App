@@ -36,12 +36,12 @@ void DatabaseManager::load_data()
 }
 
 void DatabaseManager::load_user_list() {
-	string username, pw, email, userType, funds;
+	string username, pw, email, userType, funds, age;
 	double fundsInDouble;
 	ifstream file("listUsers.txt");
 	if (file.is_open()) {
 
-		while (file >> username >> pw >> email >> userType >> funds) {
+		while (file >> username >> pw >> email >> userType >> funds >>age) {
 			if (userType == "admin" || userType == "Admin") {
 				add_user(new AdminUser(username, pw, email));
 			}
@@ -50,7 +50,7 @@ void DatabaseManager::load_user_list() {
 			}
 			else {
 				fundsInDouble = stod(funds);
-				add_user(new PlayerUser(username, pw, email, fundsInDouble));
+				add_user(new PlayerUser(username, pw, email, stod(age), fundsInDouble));
 			}
 
 		}
@@ -70,6 +70,7 @@ void DatabaseManager::load_game_list() {
 	string gameDesc;
 	double gamePrice;
 	int gameId = 0;
+	int ageRating;
 
 	gameFile.open("listGames.txt");
 
@@ -80,8 +81,8 @@ void DatabaseManager::load_game_list() {
 			gameTitle = get_token(readFile);
 			gameDesc = get_token(readFile);
 			gamePrice = stod(get_token(readFile));
-
-			add_game(Game(gameId, gameTitle, gameDesc, gamePrice));
+			ageRating = stoi(get_token(readFile));
+			add_game(Game(gameId, gameTitle, gameDesc, gamePrice, ageRating));
 		}
 
 		this->idCount = gameId;
@@ -153,7 +154,7 @@ void DatabaseManager::load_recorded_game_data() {
 	}
 }
 
-void DatabaseManager::store_user_data(string user, string pw, string mail, string userType){
+void DatabaseManager::store_user_data(const string& user, const string& pw, const string& mail, const string& userType, const int userAge){
 	ofstream outfile("listUsers.txt", ios_base::app);
 
 	string username =user;
@@ -161,9 +162,10 @@ void DatabaseManager::store_user_data(string user, string pw, string mail, strin
 	string email = mail;
 	string typeOfUser = userType;
 	string funds = "0.0";
+	int age = userAge;
 	double fundsInDouble;
 		if (outfile.is_open()){
-			outfile << username << " " << password << " " << email << " " << typeOfUser << " " << funds << endl;
+			outfile << username << " " << password << " " << email << " " << typeOfUser << " " << funds << " " << to_string(age) << endl;
 			outfile.close();
 			if (typeOfUser == "admin" || typeOfUser == "Admin") {
 				add_user(new AdminUser(username, password, email));
@@ -174,7 +176,7 @@ void DatabaseManager::store_user_data(string user, string pw, string mail, strin
 			}
 			else {
 				fundsInDouble = stod(funds);
-				add_user(new PlayerUser(username, password, email, fundsInDouble));
+				add_user(new PlayerUser(username, password, email, age, fundsInDouble));
 			}
 		}
 		else {
@@ -183,7 +185,7 @@ void DatabaseManager::store_user_data(string user, string pw, string mail, strin
 	}
 
 
-void DatabaseManager::store_game_data(string& title, string& description, double price){
+void DatabaseManager::store_game_data(const string& title,  const string& description, double price, const int gameAgeRating){
 	ofstream outFile;
 	outFile.open("listGames.txt", ios::app);
 
@@ -192,14 +194,14 @@ void DatabaseManager::store_game_data(string& title, string& description, double
 	int id = ++(this->idCount);
 	string gameId = to_string(id);
 	double gamePrice = price;
-
+	int ageRating = gameAgeRating;
 	if (!outFile) {
 		cout << "Textfile doesn't exist!";
 	}
 	else {
-		outFile << id << ',' << gameTitle << ',' << gameDesc << ',' << to_string(gamePrice) << "," << endl;
+		outFile << id << ',' << gameTitle << ',' << gameDesc << ',' << to_string(gamePrice) << "," << to_string(ageRating) << ";" << endl;
 		outFile.close();
-		add_game(Game(id, gameTitle, gameDesc, gamePrice));
+		add_game(Game(id, gameTitle, gameDesc, gamePrice, ageRating));
 		cout << "You added the game: " << title << endl;
 	}
 
@@ -418,20 +420,20 @@ void DatabaseManager::modify_game(Game*& mGame, const string& newGameDesc, const
 }
 
 void DatabaseManager::modify_user(const string& username, const double newFunds) {
-	string readFile, id, password, email, usertype, fund;
+	string readFile, id, password, email, usertype, fund , age;
 	ifstream file("listUsers.txt", ios::app);
 	ofstream newFile("listOfUser.txt", ios::app);
 
 	if (file.is_open()) {
 		while (getline(file, readFile)) {
 			istringstream stream(readFile);
-			stream >> id >> password >> email >> usertype >> fund;
+			stream >> id >> password >> email >> usertype >> fund >> age;
 			if (newFile.is_open()) {
 				if (id != username) {
 					newFile << readFile << endl;
 				}
 				else {
-					readFile = id + ' ' + password + ' ' + email + ' ' + usertype + ' ' + to_string(newFunds);
+					readFile = id + ' ' + password + ' ' + email + ' ' + usertype + ' ' + to_string(newFunds) + ' ' + age;
 					newFile << readFile << endl;
 				}
 			}

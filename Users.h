@@ -67,7 +67,7 @@ public:
 	// inherit the constructor.
 	using UserBase::UserBase;
 
-	PlayerUser(const Username& username, const string& password, const string& email, const double fund);
+	PlayerUser(const Username& username, const string& password, const string& email, const int age, const double fund);
 	// define the specific user type.
 	virtual const UserTypeId  get_user_type() const override;
 
@@ -85,6 +85,7 @@ public:
 
 	void play_game();
 
+	const int get_age_of_player() const;
 
 	void add_game_to_map(const Game::GameId& id, Game* pGame);
 	void add_recorded_data(string, string, string, string);
@@ -108,6 +109,7 @@ public:
 	
 
 private:
+	int m_age;
 	string dateOfPlay;
 	string date;
 	string time;
