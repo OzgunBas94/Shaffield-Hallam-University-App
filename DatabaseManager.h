@@ -75,6 +75,8 @@ public:
 	const string get_date_of_purchase()const;
 	const string get_date_of_play_game()const;
 	const string getTime()const;
+	UserBase* find_guest(const string& email);
+	void add_guest(UserBase* pUser);
 private:
 	// Constructors are private for singleton pattern.
 	DatabaseManager();
@@ -85,7 +87,10 @@ private:
 	// Types
 	using UserContainer = map<UserBase::Username, UserBase*>;
 	using GameContainer = map<Game::GameId, Game>;
+	using UserGuest = list<UserBase*>;
 
+
+	UserGuest guestList;
 	UserContainer m_users;
 	GameContainer m_games;
 	int idCount;

@@ -21,6 +21,7 @@ enum class UserTypeId
 	kInvalid = 0
 	, kPlayerUser
 	, kAdminUser
+	, kGuestUser
 };
 
 //--
@@ -32,13 +33,20 @@ public:
 	using Username = string;
 
 	UserBase(const Username& username, const string& password, const string& email);
+
 	virtual ~UserBase();
+
 	// mechanism for identifying the user type at runtime.
 	virtual const UserTypeId get_user_type() const const = 0;
+
 	const string get_username() const;
+
 	const string get_password() const;
+
 	void set_password(const string& val);
+
 	const string get_email() const;
+
 	void set_email(const string& val);
 
 private:
@@ -53,15 +61,8 @@ private:
 class PlayerUser : public UserBase
 {
 
-typedef struct {
-	LARGE_INTEGER start;
-	LARGE_INTEGER stop;
-} stopWatch;
-
 public:
-	using GameList = list<Game::GameId>;
-	using UserGames = map<Game::GameId, Game*>;
-	using RecordedData = list<string>;
+
 
 	// inherit the constructor.
 	using UserBase::UserBase;
@@ -69,21 +70,31 @@ public:
 	PlayerUser(const Username& username, const string& password, const string& email, const double fund);
 	// define the specific user type.
 	virtual const UserTypeId  get_user_type() const override;
-	//const GameList& get_game_list() const;
+
 	double get_available_funds() const;
+
 	void search_game_by_title();
+
 	void list_my_games();
+
 	void add_funds();
+
 	void withdraw_funds(const double val);
+
 	void buy_game();
-	void add_game_to_map(const Game::GameId& id, Game* pGame);
+
 	void play_game();
+
+
+	void add_game_to_map(const Game::GameId& id, Game* pGame);
+	void add_recorded_data(string, string, string, string);
+
 
 	void set_date_of_bought_game(const string& dateOfGame);
 	const string get_date_of_bought_game() const;
 
 	void set_date_of_playing_game(const string& dateOfGame);
-	//const string get_date_of_playing_game() const;
+
 
 	void set_time_of_playing(const string& timeOfPlaying);
 	const string get_time_of_playing() const;
@@ -94,21 +105,24 @@ public:
 	const map<Game::GameId, Game*> get_user_map() const;
 	list<string>get_recorded_list();
 
-	double PlayerUser::to_secs(LARGE_INTEGER & L);
-
-	void add_recorded_data(string,string,string,string);
+	
 
 private:
 	string dateOfPlay;
 	string date;
 	string time;
 	string length;
-	LARGE_INTEGER frequency;
+
+	//types
+	using GameList = list<Game::GameId>;
+	using UserGames = map<Game::GameId, Game*>;
+	using RecordedData = list<string>;
+
 	UserGames m_usersGames;
-	//GameList m_ownedGames; // List of owned games.
 	double m_accountFunds = 0.0; // The players available funds.
 	stopWatch timer;
 	RecordedData m_recordedData;
+
 };
 
 //--
@@ -137,4 +151,7 @@ public:
 
 
 };
-
+class GuestUser : public UserBase {
+	using UserBase::UserBase;
+	virtual const UserTypeId get_user_type() const override;
+};

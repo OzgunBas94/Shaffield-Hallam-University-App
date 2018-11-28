@@ -147,9 +147,6 @@ void AdminUser::view_statistics() {
 	cin >> option;
 
 	map<UserBase::Username, UserBase*> myMap = DatabaseManager::instance().get_map();
-
-	//map<Game::GameId, Game*> gameMap = player->get_user_map();
-
 	switch (option) {
 	case '1':
 		if (!myMap.empty()) {
@@ -171,7 +168,6 @@ void AdminUser::view_statistics() {
 		}break;
 
 	case '2': 
-		//Game* pGame;
 		
 		if (!myMap.empty()) {
 			for (map<UserBase::Username, UserBase*>::iterator it = myMap.begin(); it != myMap.end(); ++it) {
@@ -190,10 +186,6 @@ void AdminUser::view_statistics() {
 								length = *(++it2);
 								cout << "played " << game << " on " << date << " at " << time << " for" << length << endl;
 								++it2;
-
-							//pGame = DatabaseManager::instance().find_game(it2->get_game_id());
-							//DatabaseManager::instance().store_recorded_game_data(player, pGame);
-								//cout <<game
 							}
 						}
 					}
@@ -215,10 +207,6 @@ PlayerUser::PlayerUser(const Username& username, const string& password, const s
 const UserTypeId PlayerUser::get_user_type() const {
 	return UserTypeId::kPlayerUser;
 }
-
-//const PlayerUser::GameList& PlayerUser::get_game_list() const {
-//	return m_ownedGames;
-//}
 
 double PlayerUser::get_available_funds() const {
 	return m_accountFunds;
@@ -375,5 +363,13 @@ void PlayerUser::set_length_of_playing(string lengthOfPlaying) {
 const string PlayerUser::get_length_of_playing() const {
 	return length;
 }
+
+//_____________________________________________________GUEST________________________________________________________
+
+const UserTypeId GuestUser::get_user_type() const {
+	return UserTypeId();
+}
+
+
 
 

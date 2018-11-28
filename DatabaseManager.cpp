@@ -45,6 +45,9 @@ void DatabaseManager::load_user_list() {
 			if (userType == "admin" || userType == "Admin") {
 				add_user(new AdminUser(username, pw, email));
 			}
+			else if (userType == "guest") {
+				add_guest(new GuestUser(username, pw, email));
+			}
 			else {
 				fundsInDouble = stod(funds);
 				add_user(new PlayerUser(username, pw, email, fundsInDouble));
@@ -131,32 +134,26 @@ void DatabaseManager::load_recorded_game_data() {
 		if (!(file.peek() == ifstream::traits_type::eof())) {
 			while (getline(file, readFile)) {
 				username = get_token(readFile);
+				gameTitel = get_token(readFile);
+				date = get_token(readFile);
+				time = get_token(readFile);
+				length = get_token(readFile);
+
 				auto pUser = dynamic_cast<PlayerUser*>(find_user(username));
-				while ((gameTitel = get_token(readFile)) != "") {
-					date = get_token(readFile);
-					time = get_token(readFile);
-					length = get_token(readFile);
-					time = get_token(readFile);
-					length = get_token(readFile);
-
-
-					/*Game::GameId id = stoi(gameId);
-					Game* pGame = find_game(stoi(gameId));
-*/
-
+				if (pUser != nullptr) {
 					pUser->add_recorded_data(gameTitel, date, time, length);
 				}
 			}
+
+			file.close();
 		}
-		file.close();
-	}
-	else {
-		cerr << "Could not open the file!";
+		else {
+			cerr << "Could not open the file!";
+		}
 	}
 }
 
-void DatabaseManager::store_user_data(string user, string pw, string mail, string userType)
-{
+void DatabaseManager::store_user_data(string user, string pw, string mail, string userType){
 	ofstream outfile("listUsers.txt", ios_base::app);
 
 	string username =user;
@@ -171,10 +168,13 @@ void DatabaseManager::store_user_data(string user, string pw, string mail, strin
 			if (typeOfUser == "admin" || typeOfUser == "Admin") {
 				add_user(new AdminUser(username, password, email));
 			}
+			else if (typeOfUser == "guest") {
+				add_guest(new GuestUser(username, password, email));
+
+			}
 			else {
 				fundsInDouble = stod(funds);
 				add_user(new PlayerUser(username, password, email, fundsInDouble));
-				//add_user(new PlayerUser(username, password, email));
 			}
 		}
 		else {
@@ -338,6 +338,12 @@ void DatabaseManager::add_user(UserBase* pUser)
 			m_users.insert(make_pair(pUser->get_username(), pUser));
 
 		}
+}
+
+void DatabaseManager::add_guest(UserBase* pUser) {
+	if (pUser) {
+		guestList.push_back(pUser);
+	}
 }
 
 
@@ -517,6 +523,19 @@ bool DatabaseManager::find_email(const string& mail) {
 		}
 	}
 	return false;
+}
+
+
+UserBase* DatabaseManager::find_guest(const string& email)
+{
+	list<UserBase*>::iterator it = guestList.begin();
+	while (it != guestList.end()) {
+		if ((*it)->get_email() == email) {
+			return *it;
+		}
+		++it;
+	}
+	return nullptr;
 }
 
 const string DatabaseManager::getTime()const {

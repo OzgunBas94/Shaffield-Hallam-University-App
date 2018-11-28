@@ -56,6 +56,7 @@ int MenuSystem::run_login_screen()
 	return 0;
 }
 
+
 int MenuSystem::run_admin_user_menu()
 {
 	AdminUser* pAdminUser = static_cast<AdminUser*>(m_pUser);
@@ -133,6 +134,45 @@ int MenuSystem::run_player_user_menu()
 	return 0;
 }
 
+
+int MenuSystem::run_guest_user_menu(){
+	m_pUser = nullptr;
+	int result = 0;
+	string email;
+
+
+	cout << "Login Menu for guests\n";
+	cout << "Guest email: ";
+	cin >> email;
+
+
+	auto pGuest = DatabaseManager::instance().find_guest(email);
+	if (pGuest == nullptr) {
+
+	DatabaseManager::instance().store_user_data("Guest", "-", email, "guest");
+
+	}
+	cout << endl << "Hello guest, do you maybe want to sign in?" << endl;
+
+	//cout << "(1) YES\n";
+	//cout << "(2) NO\n";
+	//cout << "(q) Quit\n";
+
+	//char option;
+	//cin >> option;
+
+	//switch (option)
+	//{
+	//case '1': cout<< "Username: \nPassword: "<< endl; break;
+	//case '2': result = -1; break;
+	//case 'q': result = -1;  break;
+	//default:  cout << "INAVLID OPTION\n"; break;
+	//}
+
+
+	return 0;
+}
+
 int MenuSystem::run_unknown_user_menu()
 {
 	// in this menu we get the username and password.
@@ -141,6 +181,7 @@ int MenuSystem::run_unknown_user_menu()
 	cout << "Main Menu\n";
 	cout << "(1) List All Games\n";
 	cout << "(2) Login\n";
+	cout << "(3) Login as guest \n";
 	cout << "(q) Quit\n";
 
 	char option;
@@ -150,6 +191,7 @@ int MenuSystem::run_unknown_user_menu()
 	{
 	case '1': list_all_games(); break;
 	case '2': run_login_screen(); break;
+	case '3': run_guest_user_menu(); break;
 	case 'q': result = -1;  break;
 	default:  cout << "INAVLID OPTION\n"; break;
 	}
@@ -172,6 +214,7 @@ int MenuSystem::run()
 			{
 				case UserTypeId::kPlayerUser: result = run_player_user_menu(); break;
 				case UserTypeId::kAdminUser: result = run_admin_user_menu(); break;
+				case UserTypeId::kGuestUser: result = run_guest_user_menu(); break;
 				default: result = -1; break;
 			}
 		}

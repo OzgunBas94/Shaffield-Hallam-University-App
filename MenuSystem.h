@@ -28,6 +28,8 @@ private:
 
 	int run_player_user_menu();
 
+	int run_guest_user_menu();
+
 	int run_unknown_user_menu();
 
 	void modify_game();
