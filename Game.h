@@ -1,6 +1,6 @@
 //C++ Boot Camp - Task 2 - 2018-19 
-//Name: 
-//Student number: 
+//Name: Ozgun Bas
+//Student number: b8037359
 #pragma once
 
 #include <string>
@@ -11,12 +11,14 @@ class Game
 public:
 	using GameId = int;
 
-	Game(const GameId& gameId, const string& title, const string& desc,  double& price, const int ageRating)
+	Game(const GameId& gameId, const string& title, const string& desc,  double& price, const int ageRating, const string& studio, const int version)
 		: m_gameId(gameId)
 		, m_title(title)
 		, m_description(desc)
 		, m_price(price)
 		, m_ageRating(ageRating)
+		, m_studio(studio)
+		, m_version(version)
 	{}
 
 	virtual ~Game() {}
@@ -31,6 +33,10 @@ public:
 
 	const double get_price() const { return m_price; }
 
+	const string get_studio() const { return m_studio; }
+
+	const int get_version() const { return m_version; }
+
 	void set_title(const string& val) { m_title = val; }
 
 	void set_description(const string& val) { m_description = val; }
@@ -39,21 +45,22 @@ public:
 
 	void set_ageRating(const int val) { m_ageRating = val; }
 
-	const int get_gameCounter() const {
-		return gameCounter;
-	}
+	const int get_gameCounter() const {return gameCounter;}
 
-	void increment_gameCounter() {
-		++gameCounter;
-	}
+	void set_studio(const int val) { m_studio = val; }
 
+	void set_new_version(const int val) { m_version = val; }
+
+	void increment_gameCounter() {	++gameCounter;}
 private:
 	const GameId m_gameId;	// Numerical identifier for a game  (unique key).
 	string m_title; // The game title.
 	string m_description; // Some information about the game.
 	double m_price; //The price of the game.
 	int m_ageRating;
-	int gameCounter =0; 
+	int gameCounter = 0; 
+	string m_studio;
+	int m_version;
 };
 
 

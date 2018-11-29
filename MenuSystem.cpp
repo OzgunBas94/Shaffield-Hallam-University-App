@@ -14,7 +14,9 @@ MenuSystem& MenuSystem::instance()
 void MenuSystem::list_all_games() const
 {
 	auto gameVisitorLambda = [](const Game& rGame) {
-		cout << "ID: " << rGame.get_game_id() << "  " << rGame.get_title() << ": " << rGame.get_description() << "  Price: " << rGame.get_price() << "  Age rating: " << rGame.get_ageRating() << endl;
+		cout << "ID: " << rGame.get_game_id() << "  " << rGame.get_title() << ": " << rGame.get_description() <<
+			"  Price: " << rGame.get_price() << "  Age rating: " << rGame.get_ageRating() <<
+			"  Game Studio: " << rGame.get_studio() << "  Version: " << rGame.get_version() << endl;
 	};
 	DatabaseManager::instance().visit_games(gameVisitorLambda);
 }
@@ -175,6 +177,32 @@ int MenuSystem::run_guest_user_menu(){
 	return 0;
 }
 
+int MenuSystem::run_gamestudio_user_menu() {
+	GameStudio* pStudioUser = static_cast<GameStudio*>(m_pUser);
+	int result = 0;
+	do
+	{
+		cout << "Game Studio Menu (" << m_pUser->get_username() << ")\n";
+		cout << "(1) List My Games\n";
+		cout << "(2) Set New Version Of Game\n";
+		cout << "(q) Logout\n";
+		char option;
+		cin >> option;
+		switch (option)
+		{
+		case '1': pStudioUser->output_gameList(); break;
+		case '2': pStudioUser->set_version(); break;
+		case 'q': result = -1; break;
+		default:  cout << "INAVLID OPTION\n"; break;
+		}
+	} while (result == 0);
+	// force logout.
+	m_pUser = nullptr;
+	pStudioUser = nullptr;
+	return 0;
+}
+
+
 int MenuSystem::run_unknown_user_menu()
 {
 	// in this menu we get the username and password.
@@ -216,7 +244,8 @@ int MenuSystem::run()
 			{
 				case UserTypeId::kPlayerUser: result = run_player_user_menu(); break;
 				case UserTypeId::kAdminUser: result = run_admin_user_menu(); break;
-				case UserTypeId::kGuestUser: result = run_guest_user_menu(); break;
+				//case UserTypeId::kGuestUser: result = run_guest_user_menu(); break;
+				case UserTypeId::kGameStudioUser: result = run_gamestudio_user_menu(); break;
 				default: result = -1; break;
 			}
 		}

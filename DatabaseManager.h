@@ -1,6 +1,6 @@
 //C++ Boot Camp - Task 2 - 2018-19 
-//Name: 
-//Student number: 
+//Name: Ozgun Bas
+//Student number: b8037359
 #pragma once
 
 #include "Game.h"
@@ -36,7 +36,7 @@ public:
 
 	// Write all the data to storage.
 	void store_user_data(const string& user, const string& pw, const string& mail, const string& usertype, const int userAge);
-	void store_game_data( const string& title, const string& description, const double price, const int gameAgeRanking);
+	void store_game_data(const string& title, const string& description, double price, const int gameAgeRating, const string& studio);
 	void store_purchased_game(PlayerUser* rPlayer, Game* rGame);
 	void store_recorded_game_data(PlayerUser* rPlayer, const Game* rGame, const string date, string time, const double length);
 
@@ -71,7 +71,7 @@ public:
 
 	string get_token(string& readFile);
 	void remove_game(const string& gameId);
-	void modify_game(Game*& game, const string& newGameDesc, const string& newGamePrice);
+	void modify_game(Game*& pGame, const string& newGameDesc, const string& newGamePrice, const string& newVersion);
 	Game* find_game_with_title(string& gameTitle);
 	string to_lower_string(string& lowerString);
 	void modify_user(const string& username, const double newFunds);
@@ -84,6 +84,7 @@ public:
 	void add_guest(UserBase* pUser);
 	void list_games_by_age_rating(int age);
 	const map<Game::GameId, Game> get_games_map()const;
+	void remove_users_game(const string& gameId);
 
 private:
 	// Constructors are private for singleton pattern.

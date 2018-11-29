@@ -1,12 +1,15 @@
 //C++ Boot Camp - Task 2 - 2018-19 
-//Name: 
-//Student number: 
+//Name: Ozgun Bas
+//Student number: b8037359
 #pragma once
 
 #include <string>
 #include <list>
 #include <iostream>
 #include <map>
+#include <iomanip>
+#include <algorithm>
+
 #include "Game.h"
 #include "Stopwatch.h"
 
@@ -22,6 +25,7 @@ enum class UserTypeId
 	, kPlayerUser
 	, kAdminUser
 	, kGuestUser
+	, kGameStudioUser
 };
 
 //--
@@ -115,6 +119,7 @@ private:
 	string date;
 	string time;
 	string length;
+	double m_accountFunds = 0.0; // The players available funds.
 
 	//types
 	using GameList = list<Game::GameId>;
@@ -122,7 +127,6 @@ private:
 	using RecordedData = list<string>;
 
 	UserGames m_usersGames;
-	double m_accountFunds = 0.0; // The players available funds.
 	stopWatch timer;
 	RecordedData m_recordedData;
 
@@ -157,4 +161,18 @@ public:
 class GuestUser : public UserBase {
 	using UserBase::UserBase;
 	virtual const UserTypeId get_user_type() const override;
+};
+
+class GameStudio : public UserBase {
+public:
+	using GameList = list<Game>;
+	using UserBase::UserBase;
+	virtual const UserTypeId get_user_type() const override;
+	void set_version();
+	float const get_version(const string& gameId) const;
+	void add_game_to_list(const Game& rGame);
+	const list<Game> get_gameLIst() const;
+	const void output_gameList() const;
+private:
+	GameList l_gameList;
 };

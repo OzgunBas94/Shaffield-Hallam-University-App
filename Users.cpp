@@ -77,20 +77,30 @@ void AdminUser::add_game() {
 		string title;
 		string description;
 		double price;
-		string ageRating;
+		string ageRating, gamestudio;
 
 		cout << "Add new game." << endl;
 		cout << "Title: ";
-		cin >> title;
-		cout << "Description: ";
 		cin.ignore();
-		getline(cin, description);
-		cout << "Price: ";
-		cin >> price;
-		cout << "Define an age rating for this game: ";
-		cin >> ageRating;
-
-		DatabaseManager::instance().store_game_data(title, description, price, stoi(ageRating));
+		getline(cin, title);
+		cout << "Gamestudio: ";
+		cin >> gamestudio;
+		auto pGamestudio = DatabaseManager::instance().find_user(gamestudio);
+		if (pGamestudio != nullptr) {
+			cout << "Description: ";
+			cin.ignore();
+			getline(cin, description);
+			cout << "Price: ";
+			cin >> price;
+			cout << "Age rating: ";
+			cin >> ageRating;
+			DatabaseManager::instance().store_game_data(title, description, price, stoi(ageRating),pGamestudio->get_username());
+			cout << endl << "You have added the game '" << title << "' successfully!" << endl << endl;
+		}
+		else {
+			cout << "This gamestudio does not exist!\n";
+		}
+		
 }
 
 void AdminUser::list_all_users() const
@@ -103,7 +113,7 @@ void AdminUser::list_all_users() const
 }
 
 void AdminUser::delete_game(){
-	cout << "ID of the game you want to delete: " << endl;
+	cout << "ID of the game you want to delete: ";
 	string gameId;
 	cin >> gameId;
 
@@ -121,7 +131,7 @@ void AdminUser::modify_game(Game*& game, const int option, const int gameId) {
 		cin.ignore();
 		getline(cin, newGameDesc);
 		game->set_description(newGameDesc);
-		DatabaseManager::instance().modify_game(game, newGameDesc, "");
+		DatabaseManager::instance().modify_game(game, newGameDesc, "", "");
 		cout << "You have changed the description successfully!" << endl;
 	}
 	else {
@@ -129,7 +139,7 @@ void AdminUser::modify_game(Game*& game, const int option, const int gameId) {
 		cin >> newGamePrice;
 		double newPrice = stod(newGamePrice);
 		game->set_price(newPrice);
-		DatabaseManager::instance().modify_game(game,"", newGamePrice);
+		DatabaseManager::instance().modify_game(game,"", newGamePrice,"");
 		cout << "You have changed the description successfully!" << endl;
 	}
 }
@@ -225,9 +235,9 @@ void AdminUser::view_statistics() {
 			}
 			if (mostPurchasedGamesList.empty()) {
 				cout << endl << "The most purchased game is: " << mostPurchased->second.get_title() << " ("
-					<< mostPurchased->second.get_gameCounter() << " time(s))" << endl;
+					<< mostPurchased->second.get_gameCounter() << "x" << endl;
 			} else {
-				cout << endl << "The most purchased games are with " << mostPurchased->second.get_gameCounter()<< " time(s):"
+				cout << endl << "The most purchased games are with " << mostPurchased->second.get_gameCounter()<< "x:"
 					<< endl << mostPurchased->second.get_title() << endl;
 				for (auto it : mostPurchasedGamesList) {
 					cout << "- " << it.get_title() << endl;
@@ -433,16 +443,59 @@ const int PlayerUser::get_age_of_player() const {
 	return m_age;
 }
 
-//void PlayerUser::set_purchased_time(const string& timestemp) {
-//	time = timestemp;
-//}
 
-//_____________________________________________________GUEST________________________________________________________
+//_____________________________GUEST_____________________________
 
 const UserTypeId GuestUser::get_user_type() const {
 	return UserTypeId();
 }
+//_____________________________GAMESTUDIO_____________________________
 
+const UserTypeId GameStudio::get_user_type() const {
+	return UserTypeId::kGameStudioUser;
+}
 
+void GameStudio::set_version() {
+	output_gameList();
+	cout << "ID of the game to change the version: ";
+	string id;
+	cin >> id;
+	auto pGame = DatabaseManager::instance().find_game(stoi(id));
+	if (pGame != nullptr) {
+
+		cout << "Enter a new version: ";
+		string version;
+		cin >> version;
+		int gameVer = stoi(version);
+		pGame->set_new_version(gameVer);
+
+		DatabaseManager::instance().modify_game(pGame, "", "", version);
+		cout << "UPDATED - You have changed the version to " << version << endl;
+	}
+	else {
+		cout << "Could not find the game.";
+	}
+
+}
+
+float const GameStudio::get_version(const string& gameId) const {
+	auto pGame = DatabaseManager::instance().find_game(stoi(gameId));
+	return pGame->get_version();
+}
+
+void GameStudio::add_game_to_list(const Game& rGame) {
+	l_gameList.push_back(rGame);
+}
+
+const list<Game> GameStudio::get_gameLIst() const {
+	return l_gameList;
+}
+
+const void GameStudio::output_gameList() const {
+	cout << "Your games: " << endl;
+	for (list<Game>::const_iterator it = l_gameList.begin(); it != l_gameList.end(); ++it) {
+		cout << "ID: " << it->get_game_id() << "  Title: " << it->get_title() << "  Description: " << it->get_description() << "  Version: " << it->get_version() << endl;
+	}
+}
 
 

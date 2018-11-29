@@ -1,6 +1,6 @@
 //C++ Boot Camp - Task 2 - 2018-19 
-//Name: 
-//Student number: 
+//Name: Ozgun Bas
+//Student number: b8037359
 #pragma once
 
 #include <iostream>
@@ -29,6 +29,8 @@ private:
 	int run_player_user_menu();
 
 	int run_guest_user_menu();
+
+	int run_gamestudio_user_menu();
 
 	int run_unknown_user_menu();
 
