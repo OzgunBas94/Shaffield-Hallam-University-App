@@ -1,7 +1,14 @@
-Gamze 123 hams@hotmail.de admin 0.0
-hans 123 hans@hotmail.de admin 0.0
-mario 123 mario@hotmail.de player 261.600000
-Murat 123 murat@hotmail.de admin 0.0
-Ozgun 123 ozgun@hotmail.de admin 0.0
-dave 123 dave@hotmail.com player 189.670000
-benny 123 benny@hotmail.com player 56.270000
+gamze 123 gamze@hotmail.de admin 0.0 0
+hans 123 hans@hotmail.de admin 0.0 0
+mario 123 mario@hotmail.de player 92.960000 19
+john 123 murat@hotmail.de admin 0.0 0
+ozgun 123 ozgun@hotmail.de admin 0.0 0
+benny 123 benny@hotmail.com player 194.700000 33
+sena 123 sena@hotmail.de player 0.0 16
+guest - maria@hotmail.de guest 0.0 0
+guest - sarah@hotmail.de guest 0.0 0
+EpicGames 123 epic@hotmail.com gamestudio 0.0 0
+RockstarGames 123 rockstar@hotmail.de gamestudio 0.0 0
+EAsports 123 eagames@hotmail.com gamestudio 0.0 0
+PlaystationStore 123 playstationstore@hotmail.de gamestudio 0.0 0
+ElectronicArts 123 playstationstore@hotmail.de gamestudio 0.0 0

@@ -28,6 +28,7 @@ enum class UserTypeId
 	, kGameStudioUser
 };
 
+//_____________________________USER BASE____________________________
 //--
 // UserBase represents a user base class for the system.
 //--
@@ -59,6 +60,7 @@ private:
 	 string m_email; // Users email address.
 };
 
+//_____________________________PLAYER USER_____________________________
 //--
 // PlayerUser represents a system user who owns games
 //--
@@ -66,22 +68,17 @@ class PlayerUser : public UserBase
 {
 
 public:
-
+	//types
+	using GameList = list<Game::GameId>;
+	using UserGames = map<Game::GameId, Game*>;
+	using RecordedData = list<string>;
 
 	// inherit the constructor.
 	using UserBase::UserBase;
 
 	PlayerUser(const Username& username, const string& password, const string& email, const int age, const double fund);
-	// define the specific user type.
-	virtual const UserTypeId  get_user_type() const override;
+	
 
-	double get_available_funds() const;
-
-	void search_game_by_title();
-
-	void list_my_games();
-
-	void add_funds();
 
 	void withdraw_funds(const double val);
 
@@ -89,45 +86,58 @@ public:
 
 	void play_game();
 
-	const int get_age_of_player() const;
-
 	void add_game_to_map(const Game::GameId& id, Game* pGame);
+
 	void add_recorded_data(string, string, string, string);
 
+	void add_funds();
 
-	void set_date_purchased_game(const string& dateOfGame);
-	const string get_date_of_bought_game() const;
+	void gift_a_game();
 
-	void set_date_of_playing_game(const string& dateOfGame);
-
-
-	void set_time_of_playing(const string& timeOfPlaying);
-	const string get_time_of_playing() const;
-
-	void set_length_of_playing(string length);
-	const string get_length_of_playing() const;
+	const UserGames& get_game_map() const;
 
 	const map<Game::GameId, Game*> get_user_map() const;
+
 	list<string>get_recorded_list();
+	
+	// define the specific user type.
+	virtual const UserTypeId  get_user_type() const override;
+
+	const string get_time_of_playing() const;
+
+	const string get_date_of_bought_game() const;
+
+	const string get_length_of_playing() const;
+
+	double get_available_funds() const;
+
+	const int get_age_of_player() const;
+
+	void search_game_by_title();
+
+	void set_date_purchased_game(const string& dateOfGame);
+	
+	void set_date_of_playing_game(const string& dateOfGame);
+
+	void set_time_of_playing(const string& timeOfPlaying);
+
+	void set_length_of_playing(string length);
+
+	void list_my_games();
 
 	void list_games_by_ageRating();
-	
+
 
 private:
-	int m_age;
+	int age;
 	string dateOfPlay;
 	string date;
 	string time;
 	string length;
-	double m_accountFunds = 0.0; // The players available funds.
-
-	//types
-	using GameList = list<Game::GameId>;
-	using UserGames = map<Game::GameId, Game*>;
-	using RecordedData = list<string>;
+	stopWatch timer;
+	double accountFunds = 0.0; // The players available funds.
 
 	UserGames m_usersGames;
-	stopWatch timer;
 	RecordedData m_recordedData;
 
 };
@@ -158,21 +168,33 @@ public:
 
 
 };
+//_____________________________GUEST_____________________________
 class GuestUser : public UserBase {
+
 	using UserBase::UserBase;
+
 	virtual const UserTypeId get_user_type() const override;
 };
 
+//_____________________________GAME STUDIO_____________________________
 class GameStudio : public UserBase {
 public:
 	using GameList = list<Game>;
+
 	using UserBase::UserBase;
+
 	virtual const UserTypeId get_user_type() const override;
+
 	void set_version();
+
 	float const get_version(const string& gameId) const;
+
 	void add_game_to_list(const Game& rGame);
-	const list<Game> get_gameLIst() const;
+
+	const list<Game> get_gameList() const;
+
 	const void output_gameList() const;
+
 private:
 	GameList l_gameList;
 };

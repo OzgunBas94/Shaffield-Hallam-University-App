@@ -4,7 +4,7 @@
 
 #include "Users.h"
 #include "DatabaseManager.h"
-
+using namespace std;
 //_____________UserBase_____________
 
 using Username = string;
@@ -74,10 +74,8 @@ void AdminUser::add_user() {
 	}
 
 void AdminUser::add_game() {
-		string title;
-		string description;
+		string title, description, ageRating, gamestudio;
 		double price;
-		string ageRating, gamestudio;
 
 		cout << "Add new game." << endl;
 		cout << "Title: ";
@@ -96,11 +94,9 @@ void AdminUser::add_game() {
 			cin >> ageRating;
 			DatabaseManager::instance().store_game_data(title, description, price, stoi(ageRating),pGamestudio->get_username());
 			cout << endl << "You have added the game '" << title << "' successfully!" << endl << endl;
-		}
-		else {
+		}else {
 			cout << "This gamestudio does not exist!\n";
 		}
-		
 }
 
 void AdminUser::list_all_users() const
@@ -127,7 +123,7 @@ void AdminUser::modify_game(Game*& game, const int option, const int gameId) {
 	string newGamePrice;
 
 	if (option == 1) {
-		cout << "New description: " << endl;
+		cout << "New description: ";
 		cin.ignore();
 		getline(cin, newGameDesc);
 		game->set_description(newGameDesc);
@@ -135,7 +131,7 @@ void AdminUser::modify_game(Game*& game, const int option, const int gameId) {
 		cout << "You have changed the description successfully!" << endl;
 	}
 	else {
-		cout << "New price: " << endl;
+		cout << "New price: " ;
 		cin >> newGamePrice;
 		double newPrice = stod(newGamePrice);
 		game->set_price(newPrice);
@@ -234,10 +230,10 @@ void AdminUser::view_statistics() {
 				++it3;
 			}
 			if (mostPurchasedGamesList.empty()) {
-				cout << endl << "The most purchased game is: " << mostPurchased->second.get_title() << " ("
-					<< mostPurchased->second.get_gameCounter() << "x" << endl;
+				cout << endl << "The most purchased game is: " << mostPurchased->second.get_title() << "("
+					<< mostPurchased->second.get_gameCounter() << "x)" << endl;
 			} else {
-				cout << endl << "The most purchased games are with " << mostPurchased->second.get_gameCounter()<< "x:"
+				cout << endl << "The most purchased games are with (" << mostPurchased->second.get_gameCounter()<< "x):"
 					<< endl << mostPurchased->second.get_title() << endl;
 				for (auto it : mostPurchasedGamesList) {
 					cout << "- " << it.get_title() << endl;
@@ -263,14 +259,80 @@ void AdminUser::view_statistics() {
 //_____________PlayerUser_____________
 
 PlayerUser::PlayerUser(const Username& username, const string& password, const string& email, const int age, const double fund)
-	: UserBase(username, password, email),  m_age(age), m_accountFunds(fund) {}
+	: UserBase(username, password, email),  age(age), accountFunds(fund) {}
 
 const UserTypeId PlayerUser::get_user_type() const {
 	return UserTypeId::kPlayerUser;
 }
 
 double PlayerUser::get_available_funds() const {
-	return m_accountFunds;
+	return accountFunds;
+}
+
+void PlayerUser::set_date_purchased_game(const string& dateOfGame) {
+	date = dateOfGame;
+}
+
+const string PlayerUser::get_date_of_bought_game() const {
+	return date;
+}
+
+void PlayerUser::set_date_of_playing_game(const string& dateOfPlayingGame) {
+	dateOfPlay = dateOfPlayingGame;
+}
+
+void PlayerUser::set_time_of_playing(const string& timeOfPlaying) {
+	time = timeOfPlaying;
+}
+
+const string PlayerUser::get_time_of_playing() const {
+	return time;
+}
+
+void PlayerUser::set_length_of_playing(string lengthOfPlaying) {
+
+	length = lengthOfPlaying;
+}
+
+const string PlayerUser::get_length_of_playing() const {
+	return length;
+}
+
+const int PlayerUser::get_age_of_player() const {
+	return age;
+}
+
+const PlayerUser::UserGames& PlayerUser::get_game_map() const {
+	return m_usersGames;
+}
+
+void PlayerUser::add_game_to_map(const Game::GameId& id, Game* pGame) {
+	m_usersGames.insert(make_pair(pGame->get_game_id(), pGame));
+}
+
+void PlayerUser::list_my_games() {
+
+	cout << "My games:" << endl;
+	//UserGames m_usersGamesMap = get_user_map();
+	if (!m_usersGames.empty()) {
+		for (auto it : m_usersGames) {
+			auto pGame = DatabaseManager::instance().find_game(it.first);
+			cout << "ID: " << pGame->get_game_id() << " TITLE: " << pGame->get_title() << " DESCRIPTION: " << pGame->get_description() << endl;
+		}
+	}
+	else {
+		cout << "map is empty" << endl;
+	}
+}
+
+void PlayerUser::list_games_by_ageRating() {
+	int age;
+	cout << "Until which age rating do you want to list the games? " << endl;
+	cout << "Age rating: ";
+	cin >> age;
+
+	DatabaseManager::instance().list_games_by_age_rating(age);
+
 }
 
 void PlayerUser::search_game_by_title() {
@@ -285,30 +347,7 @@ void PlayerUser::search_game_by_title() {
 		cout << "This game is not existing! Please try again" << endl << endl;
 	}
 	else {
-		cout << "title: " << pGame->get_title() << " description: " << pGame->get_description() << " price: " << pGame->get_price() << endl << endl;
-	}
-}
-void PlayerUser::list_games_by_ageRating() {
-	int age;
-	cout << "Until which age rating do you want to list the games? " << endl;
-	cout << "Age rating: ";
-	cin >> age;
-
-	DatabaseManager::instance().list_games_by_age_rating(age);
-
-}
-
-void PlayerUser::list_my_games() {
-	cout << "My games:" << endl;
-	UserGames m_usersGamesMap = get_user_map();
-	if (!m_usersGamesMap.empty()) {
-		for (auto it : m_usersGamesMap) {
-			auto pGame = DatabaseManager::instance().find_game(it.first);
-			cout << "ID: " << pGame->get_game_id() << " TITLE: " << pGame->get_title() << " DESCRIPTION: " << pGame->get_description() << endl;
-		}
-	}
-	else {
-		cout << "map is empty" << endl;
+		cout << "Title: " << pGame->get_title() << " Description: " << pGame->get_description() << " Price: " << pGame->get_price() << endl << endl;
 	}
 }
 
@@ -316,15 +355,15 @@ void PlayerUser::add_funds() {
 	cout << "Add funds: ";
 	string fund;
 	cin >> fund;
-	this->m_accountFunds += stod(fund);
+	this->accountFunds += stod(fund);
 	double get = get_available_funds();
 	cout << "FUNDS: " << get << endl;
-	DatabaseManager::instance().modify_user(get_username(), m_accountFunds);
-	cout << "You successfully added " << fund << " in your wallet! \n Current wallet: " << m_accountFunds << endl;
+	DatabaseManager::instance().modify_user(get_username(), accountFunds);
+	cout << "You successfully added " << fund << " in your wallet! \n Current wallet: " << accountFunds << endl;
 }
 
 void PlayerUser::withdraw_funds(const double val) {
-	m_accountFunds -= val;
+	accountFunds -= val;
 }
 void PlayerUser::buy_game() {
 	Game* pGame = nullptr;
@@ -358,10 +397,6 @@ void PlayerUser::buy_game() {
 		}
 	}
 
-void PlayerUser::add_game_to_map(const Game::GameId& id, Game* pGame) {
-	m_usersGames.insert(make_pair(id, pGame));
-}
-
 void PlayerUser::add_recorded_data( string game, string date, string time, string length) {
 	m_recordedData.push_back(game);
 	m_recordedData.push_back(date);
@@ -377,72 +412,81 @@ void PlayerUser::play_game() {
 	double length;
 
 	cout << "Which game do you want to play? \n";
-	cout << "ID: ";
-	cin >> gameId;
+	if (!m_usersGames.empty()) {
+		list_my_games();
+		cout << "ID: ";
+		cin >> gameId;
 
-	auto pGame = DatabaseManager::instance().find_game(stoi(gameId));
-	CStopWatch stopwatch;
-	stopwatch.startTimer();
+		auto pGame = DatabaseManager::instance().find_game(stoi(gameId));
+		CStopWatch stopwatch;
+		stopwatch.startTimer();
 
-	cout << "Welcome to -- " << pGame->get_title() << " --" <<endl;
+		cout << "Welcome to -- " << pGame->get_title() << " --" << endl;
 
-	while (result == 0) {
-		char option;
-		cout << "(q) Quit the Game" << endl;
-		cin >> option;
-		switch (option) {
-		case 'q': 
-		
-			
-			date = DatabaseManager::instance().get_date_of_play_game();
-			time = DatabaseManager::instance().getTime();
-			stopwatch.stopTimer();
-			length = stopwatch.getElapsedTime();
-			
-			DatabaseManager::instance().store_recorded_game_data(this,pGame,date,time,length);
-			
-			result = -1;
-			break;
-		default:  cout << "INAVLID OPTION\n"; break;
+		while (result == 0) {
+			char option;
+			cout << "(q) Quit the Game" << endl;
+			cin >> option;
+			switch (option) {
+			case 'q':
+
+				date = DatabaseManager::instance().get_date_of_play_game();
+				time = DatabaseManager::instance().getTime();
+				stopwatch.stopTimer();
+				length = stopwatch.getElapsedTime();
+
+				DatabaseManager::instance().store_recorded_game_data(this, pGame, date, time, length);
+
+				result = -1;
+				break;
+			default:  cout << "INAVLID OPTION\n"; break;
+			}
+
 		}
-
+		pGame = nullptr;
 	}
-	cout << length;
+	else {
+		cout << "Your bag is empty" << endl << endl;
+	}
 }
+void PlayerUser::gift_a_game() {
+	cout << "Which player do you want to gift?" << endl;
+	string giftPlayer, giftGame;
+	cin >> giftPlayer;
+	PlayerUser* giftUser = dynamic_cast<PlayerUser*>(DatabaseManager::instance().find_user(giftPlayer));
 
-void PlayerUser::set_date_purchased_game(const string& dateOfGame) {
-	  date = dateOfGame;
-}
-
-const string PlayerUser::get_date_of_bought_game() const{
-	return date;
-}
-
-void PlayerUser::set_date_of_playing_game(const string& dateOfPlayingGame) {
-	dateOfPlay = dateOfPlayingGame;
-}
-
-void PlayerUser::set_time_of_playing(const string& timeOfPlaying) {
-	time = timeOfPlaying;
-}
-
- const string PlayerUser::get_time_of_playing() const {
-	return time;
-}
-
-void PlayerUser::set_length_of_playing(string lengthOfPlaying) {
-
-	length = lengthOfPlaying;
-}
-
-const string PlayerUser::get_length_of_playing() const {
-	return length;
-}
-
-const int PlayerUser::get_age_of_player() const {
-	return m_age;
-}
-
+		if (giftUser != nullptr) {
+			auto listOfUserToGift = giftUser->get_game_map();
+			cout << "Which game do you want to gift?" << endl;
+			cin >> giftGame;
+			auto pGame = DatabaseManager::instance().find_game_with_title(giftGame);
+			if (pGame != nullptr) {
+				if (giftUser->get_age_of_player() >= pGame->get_ageRating()) {
+					auto ownedGames = get_game_map();
+					for (map<Game::GameId, Game*> ::const_iterator it = ownedGames.begin(); it != ownedGames.end(); ++it) {
+						if (it->first == pGame->get_game_id()) {
+							listOfUserToGift.insert(make_pair(pGame->get_game_id(), pGame));
+							DatabaseManager::instance().store_purchased_game(giftUser, pGame);
+							ownedGames.erase(it);
+							DatabaseManager::instance().remove_users_game(to_string(pGame->get_game_id()));
+							break;
+						}
+					}
+					cout << "You gave the game " + pGame->get_title() + " to: " + giftUser->get_username() + " as a present."<<endl;
+				}else {
+					cout << endl << "You can't give this game to " << giftUser->get_username() << " because " << giftUser->get_username() +
+										" is " << giftUser->get_age_of_player() << " years old!" << endl;
+									cout << " The age rating for" << pGame->get_title() << " is: " << pGame->get_ageRating() << "!" << endl;
+				}
+				pGame = nullptr;
+			}else {
+				cout << "Couldn't find game";
+			}
+			giftUser = nullptr;
+		}else {
+			cout << "This user doesn't exist!" << endl;
+		}
+	}
 
 //_____________________________GUEST_____________________________
 
@@ -487,14 +531,15 @@ void GameStudio::add_game_to_list(const Game& rGame) {
 	l_gameList.push_back(rGame);
 }
 
-const list<Game> GameStudio::get_gameLIst() const {
+const list<Game> GameStudio::get_gameList() const {
 	return l_gameList;
 }
 
 const void GameStudio::output_gameList() const {
 	cout << "Your games: " << endl;
 	for (list<Game>::const_iterator it = l_gameList.begin(); it != l_gameList.end(); ++it) {
-		cout << "ID: " << it->get_game_id() << "  Title: " << it->get_title() << "  Description: " << it->get_description() << "  Version: " << it->get_version() << endl;
+		cout << "ID: " << it->get_game_id() << "  Title: " << it->get_title() << "  Description: " +
+			it->get_description() << "  Version: " << it->get_version() << endl;
 	}
 }
 

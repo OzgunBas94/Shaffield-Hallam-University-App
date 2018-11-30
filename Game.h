@@ -37,6 +37,8 @@ public:
 
 	const int get_version() const { return m_version; }
 
+	const int get_gameCounter() const { return gameCounter; }
+
 	void set_title(const string& val) { m_title = val; }
 
 	void set_description(const string& val) { m_description = val; }
@@ -45,13 +47,12 @@ public:
 
 	void set_ageRating(const int val) { m_ageRating = val; }
 
-	const int get_gameCounter() const {return gameCounter;}
-
 	void set_studio(const int val) { m_studio = val; }
 
 	void set_new_version(const int val) { m_version = val; }
 
 	void increment_gameCounter() {	++gameCounter;}
+
 private:
 	const GameId m_gameId;	// Numerical identifier for a game  (unique key).
 	string m_title; // The game title.

@@ -113,6 +113,7 @@ int MenuSystem::run_player_user_menu()
 		cout << "(5) Buy Game\n";
 		cout << "(6) Add Funds\n";
 		cout << "(7) Play Game\n";
+		cout << "(8) Gift a Game\n";
 		cout << "(q) Logout\n";
 
 		char option;
@@ -127,6 +128,7 @@ int MenuSystem::run_player_user_menu()
 		case '5': pPlayerUser->buy_game(); break;
 		case '6': pPlayerUser->add_funds(); break;
 		case '7': pPlayerUser->play_game(); break;
+		case '8': pPlayerUser->gift_a_game(); break;
 		case 'q': result = -1; break;
 		default:  cout << "INAVLID OPTION\n"; break;
 		}
@@ -167,8 +169,7 @@ int MenuSystem::run_guest_user_menu(){
 
 	switch (option)
 	{
-	case '1': cout << "Username: \nPassword: "; break;
-	//case '2': result = -1; break;
+	case '1':  result = -1; break;
 	case 'q': result = -1;  break;
 	default:  cout << "INAVLID OPTION\n"; break;
 	}

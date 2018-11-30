@@ -42,49 +42,60 @@ public:
 
 	// Adds a user to the db.
 	void add_user(UserBase* pUser);
+	// Adds a game to the db.
+	void add_game(const Game& rGame);
+	void add_guest(UserBase* pUser);
 
 	// Finds a user by username, return nullptr if the user is not found.
 	UserBase* find_user(const UserBase::Username& username);
 
 	// iterating users using visitor pattern
-	template<typename Visitor> void visit_users(Visitor& func)
-	{
-		for (auto it : m_users) { func(*it.second); }
-	}
+	template<typename Visitor> void visit_users(Visitor& func){for (auto it : m_users) { func(*it.second); }}
 
-	// Adds a game to the db.
-	void add_game(Game& rGame);
 
 	// Finds a game by id, returns nullptr if the game is not found.
 	Game* find_game(const Game::GameId gameid);
 
+	bool find_email(const string& mail);
+
+	UserBase* find_guest(const string& email);
+
+	Game* find_game_with_title(string& gameTitle);
+
 	// iterating games using visitor pattern
-	template<typename Visitor> void visit_games(Visitor& func)
-	{
-		for (auto it : m_games) { func(it.second); }
-	}
+	template<typename Visitor> void visit_games(Visitor& func){for (auto it : m_games) { func(it.second); }}
 
 	// Types
 	using UserContainer = map<UserBase::Username, UserBase*>;
+
 	using GameContainer = map<Game::GameId, Game>;
+
 	using UserGuest = list<UserBase*>;
 
-	string get_token(string& readFile);
-	void remove_game(const string& gameId);
-	void modify_game(Game*& pGame, const string& newGameDesc, const string& newGamePrice, const string& newVersion);
-	Game* find_game_with_title(string& gameTitle);
-	string to_lower_string(string& lowerString);
-	void modify_user(const string& username, const double newFunds);
-	bool find_email(const string& mail);
-	const map<UserBase::Username, UserBase*> get_map() const;
-	const string get_date_of_purchase()const;
-	const string get_date_of_play_game()const;
-	const string getTime()const;
-	UserBase* find_guest(const string& email);
-	void add_guest(UserBase* pUser);
 	void list_games_by_age_rating(int age);
 	const map<Game::GameId, Game> get_games_map()const;
+
+	//get the variables of the file
+	string get_token(string& readFile);
+	//removing the game
+	void remove_game(const string& gameId);
+
 	void remove_users_game(const string& gameId);
+
+	void modify_user(const string& username, const double newFunds);
+
+	void modify_game(Game*& pGame, const string& newGameDesc, const string& newGamePrice, const string& newVersion);
+	
+	string to_lower_string(string& lowerString);
+	
+
+	const map<UserBase::Username, UserBase*> get_map() const;
+
+	const string get_date_of_purchase()const;
+
+	const string get_date_of_play_game()const;
+
+	const string getTime()const;
 
 private:
 	// Constructors are private for singleton pattern.
@@ -96,6 +107,6 @@ private:
 	UserGuest guestList;
 	UserContainer m_users;
 	GameContainer m_games;
-	int idCount;
+	int idCount=0;
 };
 
